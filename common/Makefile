@@ -33,7 +33,7 @@ DDDG_OBJS = DDDG.o
 OBJS += $(MACHINE_MODEL_OBJS) $(UTILS_OBJS) $(DDDG_OBJS) $(GRAPH_OPTS_OBJS)
 OBJ_FILES = $(patsubst %.o,obj/%.o,$(OBJS))
 DEBUGGER_OBJ_FILES = $(patsubst %.o,obj/%.o,$(DEBUGGER_OBJS))
-WARNING_EXCEPTIONS = -Wno-reorder -Wno-deprecated-declarations
+WARNING_EXCEPTIONS = -Wno-reorder -Wno-deprecated-declarations -Wno-unused-local-typedefs -Wno-unused-function
 
 OBJ_DIR = obj
 
