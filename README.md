@@ -52,14 +52,7 @@ mkdir build
 
 4. zlib 1.2.8 or later.
 
-5. LLVM IR Trace Profiler (LLVM-Tracer)
-LLVM-Tracer is an LLVM compiler pass that instruments code in LLVM
-machine-independent IR. It prints out a dynamic trace of your program, which can
-then be taken as an input for Aladdin.
-
-You can find  LLVM-Tracer here:
-
-[https://github.com/ysshao/LLVM-Tracer.git]
+5. LLVM Tracer. Install LLVM-Tracer according to https://github.com/tamimcse/LLVM-Tracer.git
 
 To build LLVM-Tracer:
 
@@ -119,8 +112,7 @@ estimates for a particular accelerator design.
 Step-by-step:
 ----------------------
 1. Go to `$ALADDIN_HOME/SHOC/triad`
-2. Do `make run-trace`, which will generate a dynamic LLVM IR trace using LLVM-Tracer.
-3. Internally, the `make` script wraps up the following parts:
+2. Do `make run-trace`, which will generate a dynamic LLVM IR trace using LLVM-Tracer. Internally, the `make` script wraps up the following parts:
 
 * Declare functions to be accelerated. To tell LLVM-Tracer the functions we are
 interested in, set environment variable `WORKLOAD` to be the function names):
