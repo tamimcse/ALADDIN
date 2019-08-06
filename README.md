@@ -112,52 +112,9 @@ estimates for a particular accelerator design.
 Step-by-step:
 ----------------------
 1. Go to `$ALADDIN_HOME/SHOC/triad`
-2. Do `make run-trace`, which will generate a dynamic LLVM IR trace using LLVM-Tracer. Internally, the `make` script wraps up the following parts:
+2. Do `make run-trace`, which will generate a dynamic LLVM IR trace using LLVM-Tracer. It sets the WORKLOAD function internally.
 
-* Declare functions to be accelerated. To tell LLVM-Tracer the functions we are
-interested in, set environment variable `WORKLOAD` to be the function names):
-
-```
-export WORKLOAD=triad
-```
-(if you have multiple functions you are interested in, separate with commas):
-```
-export WORKLOAD=md,md_kernel
-```
-* Generate LLVM IR:
-
-`clang -g -O1 -S -fno-slp-vectorize -fno-vectorize -fno-unroll-loops -fno-inline -emit-llvm -o triad.llvm triad.c`
-
-* Run LLVM-Tracer pass:
-Before you run, make sure you already built LLVM-Tracer.
-Set `$TRACER_HOME` to where you put LLVM-Tracer code.
-
-```
-export TRACER_HOME=/your/path/to/LLVM-Tracer
-opt -S -load=$TRACER_HOME/full-trace/full_trace.so -fulltrace triad.llvm -o triad-opt.llvm
-llvm-link -o full.llvm triad-opt.llvm $TRACER_HOME/profile-func/trace_logger.llvm
-```
-
-* Generate machine code:
-
-```
-llc -filetype=asm -o full.s full.llvm
-gcc -fno-inline -o triad-instrumented full.s -lm -lz
-```
-
-* Run binary:
-
-`./triad-instrumented`
-
-It will generate a file called `dynamic_trace` under current directory.
-We provide a python script to run the above steps automatically for SHOC.
-
-```
-cd $ALADDIN_HOME/SHOC/scripts/
-python llvm_compile.py $ALADDIN_HOME/SHOC/triad triad
-```
-
-4. Config file
+3. Config file
 
 Aladdin takes user defined parameters to model corresponding accelerator
 designs. We prepare an example of such config file at
