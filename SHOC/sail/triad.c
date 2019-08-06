@@ -2,8 +2,7 @@
 
 void triad(int *a,int *b, int *c, int s){
   int i;
-  triad:for(i=0;i<NUM;i++)
-    c[i] = a[i] + s*b[i];
+    c[0] = a[0] + s*b[0];
 }
 
 int main(){
@@ -23,7 +22,7 @@ int main(){
   FILE *output;
   output = fopen("output.data", "w");
 	for(i=0; i<NUM; i++)
-    fprintf(output, "%d + %d = %d\n", a[i], b[i], c[i]);
+    fprintf(output, "%d + %d = %d\n", a[0], b[0], c[0]);
   fprintf(output, "\n");
   fclose(output);
 	return 0;
