@@ -23,7 +23,7 @@ int main(){
   FILE *output;
   output = fopen("output.data", "w");
 	for(i=0; i<NUM; i++)
-    fprintf(output, "%d,", c[i]);
+    fprintf(output, "%d + %d = %d\n", a[i], b[i], c[i]);
   fprintf(output, "\n");
   fclose(output);
 	return 0;
