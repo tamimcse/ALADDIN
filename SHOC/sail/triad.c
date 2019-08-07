@@ -9,6 +9,13 @@ void triad(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N3
 
     if (N16[nix])
 	*nh = N16[nix];
+
+    if (C16[nix]) {
+	nix = (C16[nix] - 1) * 256 + ((ip >> 40) & 0XFF);
+    }
+
+    if (N24[nix])
+	*nh = N24[nix];
 }
 
 int main(){
