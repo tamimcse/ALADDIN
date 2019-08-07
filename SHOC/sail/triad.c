@@ -1,12 +1,18 @@
 #include "triad.h"
 
 void triad(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N32, uint16_t *C32, uint8_t *N40, uint16_t *C40, uint8_t *N48, uint16_t *C48,
-		uint8_t *N56, uint16_t *C56, uint8_t *N64, uint64_t ip){
-  int i;
-    N16[0] = N24[0] + ip*C24[0];
+		uint8_t *N56, uint16_t *C56, uint8_t *N64, uint64_t ip, uint8_t *nh){
+  uint16_t nix;
+  uint32_t cix;
+
+    nix = ip >> 48;
+
+    if (N16[nix])
+	*nh = N16[nix];
 }
 
 int main(){
+	uint8_t nh;
 	uint8_t *N16, *N24, *N32, *N40, *N48, *N56, *N64;
 	uint16_t *C16, *C24, *C32, *C40, *C48, *C56;
 
@@ -42,12 +48,11 @@ int main(){
 		C56[i] = 1;
 		N64[i] = 1;
 	}
-	triad(&N16[0], &C16[0], &N24[0], &C24[0], &N32[0], &C32[0], &N40[0], &C40[0], &N48[0], &C48[0], &N56[0], &C56[0], &N64[0], 67);
+	triad(&N16[0], &C16[0], &N24[0], &C24[0], &N32[0], &C32[0], &N40[0], &C40[0], &N48[0], &C48[0], &N56[0], &C56[0], &N64[0], 67, &nh);
 
   FILE *output;
   output = fopen("output.data", "w");
-	for(i=0; i<LEVEL16_SIZE; i++)
-    fprintf(output, "%d + %d = %d\n", N16[0], N24[0], C24[0]);
+  fprintf(output, "next-hop = %d\n", nh);
   fprintf(output, "\n");
   fclose(output);
 	return 0;
