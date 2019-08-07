@@ -1,28 +1,30 @@
 #include "triad.h"
 
-void triad(uint64_t *a,uint64_t *b, uint64_t *c, int s){
+void triad(uint8_t *N16,uint8_t *N24, uint8_t *N32, uint64_t ip){
   int i;
-    c[0] = a[0] + s*b[0];
+    N16[0] = N24[0] + ip*N32[0];
 }
 
 int main(){
-	uint64_t *a, *b, *c;
-    a = (uint64_t *) malloc (sizeof(uint64_t) * NUM);
-    b = (uint64_t *) malloc (sizeof(uint64_t) * NUM);
-    c = (uint64_t *) malloc (sizeof(uint64_t) * NUM);
+	uint8_t *N16, *N24, *N32;
+
+    N16 = (uint8_t *) malloc (sizeof(uint8_t) * LEVEL16_SIZE);
+    N24 = (uint8_t *) malloc (sizeof(uint8_t) * LEVEL16_SIZE);
+    N32 = (uint8_t *) malloc (sizeof(uint8_t) * LEVEL16_SIZE);
+
 	int i;
   srand(time(NULL));
-	for(i=0; i<NUM; i++){
-		c[i] = 0;
-		a[i] = rand();
-		b[i] = rand();
+	for(i=0; i<LEVEL16_SIZE; i++){
+		N16[i] = 1;
+		N24[i] = rand();
+		N32[i] = rand();
 	}
-	triad(&a[0],&b[0],&c[0],3);
+	triad(&N16[0],&N24[0],&N32[0],67);
 
   FILE *output;
   output = fopen("output.data", "w");
-	for(i=0; i<NUM; i++)
-    fprintf(output, "%lu + %lu = %lu\n", a[0], b[0], c[0]);
+	for(i=0; i<LEVEL16_SIZE; i++)
+    fprintf(output, "%d + %d = %d\n", N16[0], N24[0], N32[0]);
   fprintf(output, "\n");
   fclose(output);
 	return 0;
