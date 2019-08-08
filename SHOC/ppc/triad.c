@@ -32,6 +32,20 @@ void triad(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bi
             n_idx = B32[idx].popcnt + POPCNT_LFT(B32[idx].bitmap, off);
             *nh = N32[n_idx];
         }
+
+        if (C32[idx].bitmap & (MSK >> off)) {
+                ck_idx = C32[idx].popcnt + POPCNT_LFT(C32[idx].bitmap, off);
+                idx_sail = (ck_idx << 8) + ((key >> 24) & 0XFF);
+                idx = idx_sail >> 6;
+                off = idx_sail & 63;
+        } else {
+                return;
+        }
+
+        if (B40[idx].bitmap & (MSK >> off)) {
+            n_idx = B40[idx].popcnt + POPCNT_LFT(B40[idx].bitmap, off);
+            *nh = N40[n_idx];
+        }
 }
 
 void reset_ppc (struct bitmap_pc *ppc) {
