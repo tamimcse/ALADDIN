@@ -1,12 +1,13 @@
 #include "triad.h"
 
-void triad(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N32, uint16_t *C32, uint8_t *N40, uint16_t *C40, uint8_t *N48, uint16_t *C48,
-		uint8_t *N56, uint16_t *C56, uint8_t *N64, uint64_t ip, uint8_t *nh){
+void triad(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32,
+	struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *C40, struct bitmap_pc *B48, uint8_t *N48, struct bitmap_pc *C48,
+	struct bitmap_pc *B64, uint8_t *N64, uint64_t ip, uint8_t *nh){
   uint16_t nix;
   uint32_t cix;
 
     nix = ip >> 48;
-
+/*
     if (N16[nix])
 	*nh = N16[nix];
 
@@ -51,47 +52,61 @@ void triad(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N3
 
     if (N64[nix])
 	*nh = N64[nix];
+*/
+}
 
+void reset_ppc (struct bitmap_pc *ppc) {
+	ppc->bitmap = 0;
+	ppc->popcnt = 0;
 }
 
 int main(){
 	uint8_t nh;
-	uint8_t *N16, *N24, *N32, *N40, *N48, *N56, *N64;
-	uint16_t *C16, *C24, *C32, *C40, *C48, *C56;
+	uint8_t *N16, *N32, *N40, *N48, *N64;
+	struct bitmap_pc *C16, *C32, *C40, *C48, *B16, *B32, *B40, *B48, *B64;
+        
+    B16 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B16_SIZE);
+    N16 = (uint8_t *) malloc (sizeof(uint8_t) * N16_SIZE);
+    C16 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B16_SIZE);
 
-    N16 = (uint8_t *) malloc (sizeof(uint8_t) * LEVEL16_SIZE);
-    C16 = (uint16_t *) malloc (sizeof(uint16_t) * LEVEL16_SIZE);
-    N24 = (uint8_t *) malloc (sizeof(uint8_t) * ARR_SIZE);
-    C24 = (uint16_t *) malloc (sizeof(uint16_t) * ARR_SIZE);
-    N32 = (uint8_t *) malloc (sizeof(uint8_t) * ARR_SIZE);
-    C32 = (uint16_t *) malloc (sizeof(uint16_t) * ARR_SIZE);
-    N40 = (uint8_t *) malloc (sizeof(uint8_t) * ARR_SIZE);
-    C40 = (uint16_t *) malloc (sizeof(uint16_t) * ARR_SIZE);
-    N48 = (uint8_t *) malloc (sizeof(uint8_t) * ARR_SIZE);
-    C48 = (uint16_t *) malloc (sizeof(uint16_t) * ARR_SIZE);
-    N56 = (uint8_t *) malloc (sizeof(uint8_t) * ARR_SIZE);
-    C56 = (uint16_t *) malloc (sizeof(uint16_t) * ARR_SIZE);
-    N64 = (uint8_t *) malloc (sizeof(uint8_t) * ARR_SIZE);
+    B32 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    N32 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
+    C32 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
 
+    B40 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
+    N40 = (uint8_t *) malloc (sizeof(uint8_t) * N40_N48_SIZE);
+    C40 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
+
+    B48 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
+    N48 = (uint8_t *) malloc (sizeof(uint8_t) * N40_N48_SIZE);
+    C48 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
+
+    B64 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B64_SIZE);
+    N64 = (uint8_t *) malloc (sizeof(uint8_t) * N64_SIZE);
 
 	int i;
   srand(time(NULL));
-	for(i=0; i<LEVEL16_SIZE; i++){
+	for(i=0; i<10; i++){
+		reset_ppc(&B16[i]);
 		N16[i] = 1;
-		C16[i] = 1;
-		N24[i] = rand();
-		C24[i] = rand();
-		N32[i] = rand();
-		C32[i] = rand();
-		N40[i] = rand();
-		C40[i] = 1;
+		reset_ppc(&C16[i]);
+
+		reset_ppc(&B32[i]);
+		N32[i] = 1;
+		reset_ppc(&C32[i]);
+
+		reset_ppc(&B40[i]);
+		N40[i] = 1;
+		reset_ppc(&C40[i]);
+
+		reset_ppc(&B48[i]);
 		N48[i] = 1;
-		C48[i] = 1;
-		N56[i] = 1;
-		C56[i] = 1;
+		reset_ppc(&C48[i]);
+
+		reset_ppc(&B64[i]);
 		N64[i] = 1;
 	}
-	triad(&N16[0], &C16[0], &N24[0], &C24[0], &N32[0], &C32[0], &N40[0], &C40[0], &N48[0], &C48[0], &N56[0], &C56[0], &N64[0], 67, &nh);
+	triad(B16, N16, C16, B32, N32, C32, B40, N40, C40, B48, N48, C48, B64, N64, 67, &nh);
 
   FILE *output;
   output = fopen("output.data", "w");
