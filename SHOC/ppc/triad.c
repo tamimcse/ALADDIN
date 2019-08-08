@@ -1,6 +1,6 @@
 #include "triad.h"
 
-#define POPCNT_LFT(X, N) (((X) >> (63 - (N))) >> 1)
+#define POPCNT_LFT(X, N) (__builtin_popcount(((X) >> (63 - (N))) >> 1))
 
 void triad(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32,
 	struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *C40, struct bitmap_pc *B48, uint8_t *N48, struct bitmap_pc *C48,
