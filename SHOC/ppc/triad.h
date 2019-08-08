@@ -39,6 +39,8 @@
 
 #define B64_SIZE NUM64 * 64
 
+#define MSK 0X8000000000000000ULL
+
 struct bitmap_pc {
     uint64_t bitmap;
     uint16_t popcnt;

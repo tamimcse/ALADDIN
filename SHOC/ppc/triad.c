@@ -1,12 +1,23 @@
 #include "triad.h"
 
+#define POPCNT_LFT(X, N) (((X) >> (63 - (N))) >> 1)
+
 void triad(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32,
 	struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *C40, struct bitmap_pc *B48, uint8_t *N48, struct bitmap_pc *C48,
-	struct bitmap_pc *B64, uint8_t *N64, uint64_t ip, uint8_t *nh){
-  uint16_t nix;
-  uint32_t cix;
+	struct bitmap_pc *B64, uint8_t *N64, uint64_t key, uint8_t *nh){
+  uint32_t n_idx;
+  uint32_t off;
+  uint32_t idx, idx_sail;
 
-    nix = ip >> 48;
+	idx_sail = key >> 48;
+        idx = idx_sail >> 6;
+        off = idx_sail & 63;
+
+        if (B16[idx].bitmap & (MSK >> off)) {
+            n_idx = B16[idx].popcnt + POPCNT_LFT(B16[idx].bitmap, off);
+            *nh = N16[n_idx];
+        }
+
 /*
     if (N16[nix])
 	*nh = N16[nix];
