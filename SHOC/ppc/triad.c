@@ -8,6 +8,7 @@ void triad(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bi
   uint32_t n_idx;
   uint32_t off;
   uint32_t idx, idx_sail;
+  uint32_t ck_idx;
 
 	idx_sail = key >> 48;
         idx = idx_sail >> 6;
@@ -18,52 +19,19 @@ void triad(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bi
             *nh = N16[n_idx];
         }
 
-/*
-    if (N16[nix])
-	*nh = N16[nix];
+        if (C16[idx].bitmap & (MSK >> off)) {
+                ck_idx = C16[idx].popcnt + POPCNT_LFT(C16[idx].bitmap, off);
+                idx_sail = (ck_idx << 16) + ((key >> 32) & 0XFFFF);
+                idx = idx_sail >> 6;
+                off = idx_sail & 63;
+        } else {
+                return;
+        }
 
-    if (C16[nix]) {
-	nix = (C16[nix] - 1) * 256 + ((ip >> 40) & 0XFF);
-    }
-
-    if (N24[nix])
-	*nh = N24[nix];
-
-    if (C24[nix]) {
-	nix = (C24[nix] - 1) * 256 + ((ip >> 32) & 0XFF);
-    }
-
-    if (N32[nix])
-	*nh = N32[nix];
-
-    if (C32[nix]) {
-	nix = (C32[nix] - 1) * 256 + ((ip >> 24) & 0XFF);
-    }
-
-    if (N40[nix])
-	*nh = N40[nix];
-
-    if (C40[nix]) {
-	nix = (C40[nix] - 1) * 256 + ((ip >> 16) & 0XFF);
-    }
-
-    if (N48[nix])
-	*nh = N48[nix];
-
-    if (C48[nix]) {
-	nix = (C48[nix] - 1) * 256 + ((ip >> 8) & 0XFF);
-    }
-
-    if (N56[nix])
-	*nh = N56[nix];
-
-    if (C56[nix]) {
-	nix = (C56[nix] - 1) * 256 + (ip & 0XFF);
-    }
-
-    if (N64[nix])
-	*nh = N64[nix];
-*/
+        if (B32[idx].bitmap & (MSK >> off)) {
+            n_idx = B32[idx].popcnt + POPCNT_LFT(B32[idx].bitmap, off);
+            *nh = N32[n_idx];
+        }
 }
 
 void reset_ppc (struct bitmap_pc *ppc) {
