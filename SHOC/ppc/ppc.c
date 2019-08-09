@@ -1,8 +1,8 @@
-#include "triad.h"
+#include "ppc.h"
 
 #define POPCNT_LFT(X, N) (__builtin_popcount(((X) >> (63 - (N))) >> 1))
 
-void triad(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32,
+void fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32,
 	struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *C40, struct bitmap_pc *B48, uint8_t *N48, struct bitmap_pc *C48,
 	struct bitmap_pc *B64, uint8_t *N64, uint64_t key, uint8_t *nh){
   uint32_t n_idx;
@@ -127,7 +127,7 @@ int main(){
 		reset_ppc(&B64[i]);
 		N64[i] = 1;
 	}
-	triad(B16, N16, C16, B32, N32, C32, B40, N40, C40, B48, N48, C48, B64, N64, 67, &nh);
+	fib_lookup(B16, N16, C16, B32, N32, C32, B40, N40, C40, B48, N48, C48, B64, N64, 67, &nh);
 
   FILE *output;
   output = fopen("output.data", "w");
