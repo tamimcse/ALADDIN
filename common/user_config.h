@@ -128,7 +128,7 @@ class UserConfigParams {
         if (base_1 == 0)
           continue;
 
-        if (rangesOverlap(base_0, end_0, base_1, end_1)) {
+        if (!rangesOverlap(base_0, end_0, base_1, end_1)) {
           continue;
         } else {
           overlapping_arrays.insert(OverlappingArrayPair(
@@ -162,11 +162,7 @@ class UserConfigParams {
   // Returns true if the ranges defined by [base_0, end_0) and [base_1, end_1)
   // overlap.
   bool rangesOverlap(Addr base_0, Addr end_0, Addr base_1, Addr end_1) {
-    // Two ranges [A,B], [C,D] do not overlap if A and B are both less than
-    // C or both greater than D.
-    bool disjoint = ((base_0 < base_1 && end_0 <= base_1) ||
-                     (base_0 >= end_1 && end_0 > end_1));
-    return !disjoint;
+    return (base_1 >= base_0 && base_1 <= end_0) || (end_1 >= base_0 && end_1 <= end_0); 
   }
 
   // This class defines a pair of arrays that overlap.
