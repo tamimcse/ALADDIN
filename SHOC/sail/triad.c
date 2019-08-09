@@ -19,6 +19,8 @@ void triad(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N3
 
     if (C24[nix]) {
 	nix = (C24[nix] - 1) * 256 + ((ip >> 32) & 0XFF);
+    } else {
+	return;
     }
 
     if (N32[nix])
@@ -26,6 +28,8 @@ void triad(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N3
 
     if (C32[nix]) {
 	nix = (C32[nix] - 1) * 256 + ((ip >> 24) & 0XFF);
+    } else {
+	return;
     }
 
     if (N40[nix])
@@ -33,6 +37,8 @@ void triad(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N3
 
     if (C40[nix]) {
 	nix = (C40[nix] - 1) * 256 + ((ip >> 16) & 0XFF);
+    } else {
+	return;
     }
 
     if (N48[nix])
@@ -40,6 +46,8 @@ void triad(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N3
 
     if (C48[nix]) {
 	nix = (C48[nix] - 1) * 256 + ((ip >> 8) & 0XFF);
+    } else {
+	return;
     }
 
     if (N56[nix])
@@ -47,6 +55,8 @@ void triad(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N3
 
     if (C56[nix]) {
 	nix = (C56[nix] - 1) * 256 + (ip & 0XFF);
+    } else {
+	return;
     }
 
     if (N64[nix])
