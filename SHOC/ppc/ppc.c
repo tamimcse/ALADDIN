@@ -77,8 +77,8 @@ void fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, stru
 }
 
 void reset_ppc (struct bitmap_pc *ppc) {
-	ppc->bitmap = 0;
-	ppc->popcnt = 0;
+	ppc->bitmap = 0XFFFFFFFFFFFFFFFF;
+	ppc->popcnt = 5;
 }
 
 int main(){
