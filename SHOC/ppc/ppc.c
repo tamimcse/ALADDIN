@@ -107,26 +107,44 @@ int main(){
 
 	int i;
   srand(time(NULL));
-	for(i=0; i<10; i++){
+	for(i=0; i<B16_SIZE; i++){
 		reset_ppc(&B16[i]);
-		N16[i] = 1;
 		reset_ppc(&C16[i]);
+	}
 
+	for(i=0; i<N16_SIZE; i++){
+		N16[i] = 1;
+	}
+
+	for(i=0; i<B32_SIZE; i++){
 		reset_ppc(&B32[i]);
+		reset_ppc(&C32[i]);	
+	}
+
+	for(i=0; i<N32_SIZE; i++){
 		N32[i] = 1;
-		reset_ppc(&C32[i]);
+	}
 
+	for(i=0; i<B40_B48_SIZE; i++){
 		reset_ppc(&B40[i]);
-		N40[i] = 1;
 		reset_ppc(&C40[i]);
-
 		reset_ppc(&B48[i]);
-		N48[i] = 1;
-		reset_ppc(&C48[i]);
+		reset_ppc(&C48[i]);	
+	}
 
+	for(i=0; i<N40_N48_SIZE; i++){
+		N40[i] = 1;
+		N48[i] = 1;	
+	}
+
+	for(i=0; i<B64_SIZE; i++){
 		reset_ppc(&B64[i]);
+	}
+
+	for(i=0; i<N64_SIZE; i++){
 		N64[i] = 1;
 	}
+
 	fib_lookup(B16, N16, C16, B32, N32, C32, B40, N40, C40, B48, N48, C48, B64, N64, 67, &nh);
 
   FILE *output;
