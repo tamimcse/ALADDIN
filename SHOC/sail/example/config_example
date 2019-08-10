@@ -14,4 +14,4 @@ partition,cyclic,N64,4194304,1,2
 partition,cyclic,nh,1,1,1
 unrolling,sail,sail,2
 pipelining,1
-cycle_time,10
+cycle_time,1
