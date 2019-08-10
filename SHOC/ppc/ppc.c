@@ -5,10 +5,11 @@
 void fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32,
 	struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *C40, struct bitmap_pc *B48, uint8_t *N48, struct bitmap_pc *C48,
 	struct bitmap_pc *B64, uint8_t *N64, uint64_t key, uint8_t *nh){
-  uint32_t n_idx;
-  uint32_t off;
-  uint32_t idx, idx_sail;
-  uint32_t ck_idx;
+  /*This variables are made uint64_t to avoid generating trunc opcode*/
+  uint64_t n_idx;
+  uint64_t off;
+  uint64_t idx, idx_sail;
+  uint64_t ck_idx;
 
 	idx_sail = key >> 48;
         idx = idx_sail >> 6;
