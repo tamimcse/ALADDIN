@@ -558,6 +558,8 @@ void getTrigonometricFunctionPowerArea(float cycle_time,
                 << " at 10 ns. " << std::endl;
       std::cerr << " Cycle time: " << cycle_time << " is not supported yet."
                 << " Use 10ns power model instead." << std::endl;
+      std::cerr  << " If you do not use trigonometric functions in"
+                << " your application, then ignore the message" << std::endl;
       *internal_power = FP_3STAGE_TRIG_10ns_int_power;
       *switch_power   = FP_3STAGE_TRIG_10ns_switch_power;
       *leakage_power  = FP_3STAGE_TRIG_10ns_leakage_power;

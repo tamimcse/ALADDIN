@@ -15,4 +15,4 @@ partition,cyclic,N64,655360,1,2
 partition,cyclic,nh,1,1,1
 unrolling,ppc,ppc,2
 pipelining,1
-cycle_time,10
+cycle_time,1
