@@ -11,7 +11,7 @@ partition,cyclic,C48,8388608,2,2
 partition,cyclic,N56,4194304,1,2
 partition,cyclic,C56,8388608,2,2
 partition,cyclic,N64,4194304,1,2
-partition,cyclic,nh,1,1,1
+partition,complete,nh,1
 unrolling,sail,sail,2
 pipelining,1
 cycle_time,1
