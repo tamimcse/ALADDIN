@@ -12,7 +12,7 @@ partition,cyclic,N48,262144,1,2
 partition,cyclic,C48,655360,10,2
 partition,cyclic,B64,256000,10,2
 partition,cyclic,N64,655360,1,2
-partition,cyclic,nh,1,1,1
+partition,complete,nh,1
 unrolling,ppc,ppc,2
 pipelining,1
 cycle_time,1
