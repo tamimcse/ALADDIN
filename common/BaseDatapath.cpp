@@ -204,9 +204,7 @@ void BaseDatapath::dumpStats() {
   computeRegStats();
   writePerCycleActivity();
   writeOtherStats();
-#ifdef DEBUG
   dumpGraph(benchName);
-#endif
 }
 
 /*

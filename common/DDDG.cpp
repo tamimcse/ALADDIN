@@ -804,6 +804,7 @@ size_t DDDG::build_initial_dddg(size_t trace_off, size_t trace_size) {
     output_dddg();
 
     std::cout << "-------------------------------" << std::endl;
+    std::cout << "Num of instructions: " << num_of_instructions << std::endl;
     std::cout << "Num of Nodes: " << program->getNumNodes() << std::endl;
     std::cout << "Num of Edges: " << program->getNumEdges() << std::endl;
     std::cout << "Num of Reg Edges: " << num_of_register_dependency()
