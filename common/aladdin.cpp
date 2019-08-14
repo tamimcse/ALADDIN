@@ -68,7 +68,11 @@ int main(int argc, const char* argv[]) {
     acc->prepareForScheduling();
 
     // Scheduling
+    int tmpExecutedNodes = 0;
     while (!acc->step()) {
+        std::cout << "Current cycle =" << acc->getCurrentCycle();
+        std::cout << " Executed node = " << acc->getExecutedNodes() - tmpExecutedNodes << std::endl;
+        tmpExecutedNodes = acc->getExecutedNodes();
     }
 
     acc->dumpStats();

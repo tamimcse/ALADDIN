@@ -224,6 +224,7 @@ class BaseDatapath {
   //=----------- Simulation/scheduling functions --------=//
 
   unsigned getCurrentCycle() { return num_cycles; }
+  unsigned getExecutedNodes() { return executedNodes; }
   virtual void prepareForScheduling();
   virtual int rescheduleNodesWhenNeeded();
   void dumpGraph(std::string graph_name);
