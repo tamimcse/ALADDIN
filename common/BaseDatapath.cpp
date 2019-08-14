@@ -198,6 +198,20 @@ void BaseDatapath::treeHeightReduction() {
   opt->run();
 }
 
+void BaseDatapath::printSchedule () {
+  std::cout << "================================" << std::endl;
+  std::cout << "        Current Schedule        " << std::endl;
+  std::cout << "================================" << std::endl;
+  for (auto node_it : program.nodes) {
+    ExecNode* node = node_it.second;
+    if (node->is_isolated())
+        continue;
+    std::cout << node->get_microop_name() << ": ";
+    std::cout << node->get_start_execution_cycle() + 1 << "-";
+    std::cout << node->get_complete_execution_cycle() + 1 << std::endl;
+  }
+}
+
 // called in the end of the whole flow
 void BaseDatapath::dumpStats() {
   rescheduleNodesWhenNeeded();

@@ -231,6 +231,7 @@ class BaseDatapath {
   virtual int rescheduleNodesWhenNeeded();
   void dumpGraph(std::string graph_name);
   void dumpStats();
+  void printSchedule();
 
   //=------------ Clean up functions -----------=//
 

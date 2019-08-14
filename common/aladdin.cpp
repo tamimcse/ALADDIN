@@ -76,7 +76,7 @@ int main(int argc, const char* argv[]) {
         acc->resetExecutedInstructionsPerCycle();
         tmpExecutedNodes = acc->getExecutedNodes();
     }
-
+    acc->printSchedule();
     acc->dumpStats();
     acc->clearDatapath();
 
