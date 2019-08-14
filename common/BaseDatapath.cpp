@@ -825,6 +825,7 @@ void BaseDatapath::prepareForScheduling() {
 
   numTotalEdges = boost::num_edges(program.graph);
   executedNodes = 0;
+  executedInstructionsPerCycle = "";
   totalConnectedNodes = 0;
   for (auto node_it = program.nodes.begin(); node_it != program.nodes.end();
        ++node_it) {
@@ -972,6 +973,7 @@ void BaseDatapath::markNodeCompleted(
     std::list<ExecNode*>::iterator& executingQueuePos, int& advance_to) {
   ExecNode* node = *executingQueuePos;
   executedNodes++;
+  executedInstructionsPerCycle += " " + node->get_microop_name();
   node->set_complete_execution_cycle(num_cycles);
   executingQueue.erase(executingQueuePos);
   updateChildren(node);

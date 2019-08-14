@@ -71,7 +71,9 @@ int main(int argc, const char* argv[]) {
     int tmpExecutedNodes = 0;
     while (!acc->step()) {
         std::cout << "Current cycle =" << acc->getCurrentCycle();
-        std::cout << " Executed node = " << acc->getExecutedNodes() - tmpExecutedNodes << std::endl;
+        std::cout << " Executed node = " << acc->getExecutedNodes() - tmpExecutedNodes;
+        std::cout << " Executed instructions = " <<  acc->getExecutedInstructionsPerCycle() << std::endl;
+        acc->resetExecutedInstructionsPerCycle();
         tmpExecutedNodes = acc->getExecutedNodes();
     }
 

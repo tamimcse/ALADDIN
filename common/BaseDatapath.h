@@ -225,6 +225,8 @@ class BaseDatapath {
 
   unsigned getCurrentCycle() { return num_cycles; }
   unsigned getExecutedNodes() { return executedNodes; }
+  std::string getExecutedInstructionsPerCycle() { return executedInstructionsPerCycle; }
+  void resetExecutedInstructionsPerCycle() { executedInstructionsPerCycle = ""; }
   virtual void prepareForScheduling();
   virtual int rescheduleNodesWhenNeeded();
   void dumpGraph(std::string graph_name);
@@ -399,6 +401,7 @@ class BaseDatapath {
 
   unsigned totalConnectedNodes;
   unsigned executedNodes;
+  std::string executedInstructionsPerCycle;
 
   std::list<ExecNode*> executingQueue;
   std::list<ExecNode*> readyToExecuteQueue;
