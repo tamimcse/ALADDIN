@@ -989,6 +989,8 @@ void BaseDatapath::markNodeCompleted(
   ExecNode* node = *executingQueuePos;
   executedNodes++;
   executedInstructionsPerCycle += " " + node->get_microop_name();
+  executedInstructionsPerCycle += ". ";
+  executedInstructionsPerCycle += boost::lexical_cast<std::string>(node->fu_node_latency(1.0));
   node->set_complete_execution_cycle(num_cycles);
   executingQueue.erase(executingQueuePos);
   updateChildren(node);
