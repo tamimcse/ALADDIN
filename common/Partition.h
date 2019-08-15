@@ -88,7 +88,8 @@ class Partition {
  protected:
   /* Num of bandwidth used in the current cycle. Reset every cycle. */
   unsigned occupied_bw;
-  /* Num of ports available. */
+  /* Num of ports available. It indicates how many function units can read from
+   * this partition concurrently in each cycle */
   unsigned num_ports;
   /* Total number of loads so far. */
   unsigned loads;

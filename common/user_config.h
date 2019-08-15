@@ -155,6 +155,8 @@ class UserConfigParams {
 
   float cycle_time;
   bool ready_mode;
+  /*Number of port in each scratchpad partition. It indicates how many
+   FU can load/store to the partition in each cycle simultaniously*/
   unsigned scratchpad_ports;
   bool global_pipelining;
 
