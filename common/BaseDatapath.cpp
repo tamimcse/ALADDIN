@@ -198,6 +198,7 @@ void BaseDatapath::treeHeightReduction() {
   opt->run();
 }
 
+/*TODO: Need to print the nodes according to the order of cycle*/
 void BaseDatapath::printSchedule () {
   std::cout << "================================" << std::endl;
   std::cout << "        Current Schedule        " << std::endl;
