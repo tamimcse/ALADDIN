@@ -307,6 +307,74 @@
 #define SHIFTER_10ns_area                             2.496461e+02
 #define SHIFTER_10ns_critical_path_delay              0.70
 
+/*We don't know the hardware model for ICmp, GetElementPtr and POPCNT. 
+ So approximate them according to Sophia's and Sam's suggestions. 
+ Here ICmp is same as ADD. GetElementptr is combination of MUL and ADD*/
+
+#define ICMP_0_5ns_int_power                           9.364555e-02
+#define ICMP_0_5ns_switch_power                        1.900256e-01
+#define ICMP_0_5ns_dynamic_power                       2.836642e-01
+#define ICMP_0_5ns_dynamic_energy                      1.418321e-01
+#define ICMP_0_5ns_leakage_power                       3.265969e-03
+#define ICMP_0_5ns_area                                3.793488e+02
+#define ICMP_0_5ns_critical_path_delay                 0.47
+
+#define ICMP_1ns_int_power                             5.523790e-02
+#define ICMP_1ns_switch_power                          1.551852e-01
+#define ICMP_1ns_dynamic_power                         2.104162e-01
+#define ICMP_1ns_dynamic_energy                        2.104162e-01
+#define ICMP_1ns_leakage_power                         2.249908e-03
+#define ICMP_1ns_area                                  2.779792e+02
+#define ICMP_1ns_critical_path_delay                   0.98
+
+#define ICMP_2ns_int_power                             2.436880e-02
+#define ICMP_2ns_switch_power                          1.850702e-02
+#define ICMP_2ns_dynamic_power                         4.287582e-02
+#define ICMP_2ns_dynamic_energy                        8.575164e-02
+#define ICMP_2ns_leakage_power                         2.380803e-03
+#define ICMP_2ns_area                                  1.794430e+02
+#define ICMP_2ns_critical_path_delay                   1.75
+
+#define ICMP_3ns_int_power                             1.626669e-02
+#define ICMP_3ns_switch_power                          1.235638e-02
+#define ICMP_3ns_dynamic_power                         2.862321e-02
+#define ICMP_3ns_dynamic_energy                        8.586963e-02
+#define ICMP_3ns_leakage_power                         2.380803e-03
+#define ICMP_3ns_area                                  1.794430e+02
+#define ICMP_3ns_critical_path_delay                   1.75
+
+#define ICMP_4ns_int_power                             1.217552e-02
+#define ICMP_4ns_switch_power                          9.249207e-03
+#define ICMP_4ns_dynamic_power                         2.142472e-02
+#define ICMP_4ns_dynamic_energy                        8.569890e-02
+#define ICMP_4ns_leakage_power                         2.380803e-03
+#define ICMP_4ns_area                                  1.794430e+02
+#define ICMP_4ns_critical_path_delay                   1.75
+
+#define ICMP_5ns_int_power                             9.743773e-03
+#define ICMP_5ns_switch_power                          7.400587e-03
+#define ICMP_5ns_dynamic_power                         1.714394e-02
+#define ICMP_5ns_dynamic_energy                        8.572111e-02
+#define ICMP_5ns_leakage_power                         2.380803e-03
+#define ICMP_5ns_area                                  1.794430e+02
+#define ICMP_5ns_critical_path_delay                   1.75
+
+#define ICMP_6ns_int_power                             8.115300e-03
+#define ICMP_6ns_switch_power                          6.162853e-03
+#define ICMP_6ns_dynamic_power                         1.427760e-02
+#define ICMP_6ns_dynamic_energy                        8.566836e-02
+#define ICMP_6ns_leakage_power                         2.380803e-03
+#define ICMP_6ns_area                                  1.794430e+02
+#define ICMP_6ns_critical_path_delay                   1.75
+
+#define ICMP_10ns_int_power                            4.832257e-03
+#define ICMP_10ns_switch_power                         3.701820e-03
+#define ICMP_10ns_dynamic_power                        8.534078e-03
+#define ICMP_10ns_dynamic_energy                       8.534078e-02
+#define ICMP_10ns_leakage_power                        2.380803e-03
+#define ICMP_10ns_area                                 1.794430e+02
+#define ICMP_10ns_critical_path_delay                  1.75
+
 /* Floating Point Power/Area/Energy Models.
  * We use Synopsys DesignWare IP library to model 3-stage both single-precision
  * (SP) and double precision (DP) floating point functional units, including
@@ -540,6 +608,11 @@ void getRegisterPowerArea(float cycle_time,
                           float* leakage_power_per_bit,
                           float* area);
 void getAdderPowerArea(float cycle_time,
+                       float* internal_power,
+                       float* swich_power,
+                       float* leakage_power,
+                       float* area);
+void getCmpPowerArea(float cycle_time,
                        float* internal_power,
                        float* swich_power,
                        float* leakage_power,

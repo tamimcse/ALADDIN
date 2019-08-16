@@ -294,7 +294,7 @@ void BaseDatapath::updatePerCycleActivity(
    * leakage power and area of multipliers are relatively significant, and no
    * reuse for adders. This way of modeling is consistent with our observation
    * of accelerators generated with Vivado. */
-  unsigned num_adds_so_far = 0, num_bits_so_far = 0, num_shifters_so_far = 0;
+  unsigned num_adds_so_far = 0, num_cmps_so_far = 0, num_bits_so_far = 0, num_shifters_so_far = 0;
   auto bound_it = program.loop_bounds.begin();
   for (auto node_it = program.nodes.begin(); node_it != program.nodes.end();
        ++node_it) {
@@ -307,11 +307,14 @@ void BaseDatapath::updatePerCycleActivity(
     if (node->get_node_id() == bound_it->node_id) {
       if (max_it->second.add < num_adds_so_far)
         max_it->second.add = num_adds_so_far;
+      if (max_it->second.cmp < num_cmps_so_far)
+        max_it->second.cmp = num_cmps_so_far;
       if (max_it->second.bit < num_bits_so_far)
         max_it->second.bit = num_bits_so_far;
       if (max_it->second.shifter < num_shifters_so_far)
         max_it->second.shifter = num_shifters_so_far;
       num_adds_so_far = 0;
+      num_cmps_so_far = 0;
       num_bits_so_far = 0;
       num_shifters_so_far = 0;
       bound_it++;
@@ -348,7 +351,10 @@ void BaseDatapath::updatePerCycleActivity(
     } else if (node->is_int_add_op()) {
       curr_fu_activity.add += 1;
       num_adds_so_far += 1;
-    } else if (node->is_shifter_op()) {
+    } else if (node->is_int_cmp_op()) {
+      curr_fu_activity.cmp += 1;
+      num_cmps_so_far += 1;
+    }else if (node->is_shifter_op()) {
       curr_fu_activity.shifter += 1;
       num_shifters_so_far += 1;
     } else if (node->is_bit_op()) {
@@ -419,6 +425,7 @@ void BaseDatapath::outputPerCycleActivity(
     std::unordered_map<std::string, FunctionActivity>& func_max_activity) {
   /*Set the constants*/
   float add_int_power, add_switch_power, add_leak_power, add_area;
+  float cmp_int_power, cmp_switch_power, cmp_leak_power, cmp_area;
   float mul_int_power, mul_switch_power, mul_leak_power, mul_area;
   float fp_sp_mul_int_power, fp_sp_mul_switch_power, fp_sp_mul_leak_power,
       fp_sp_mul_area;
@@ -439,6 +446,8 @@ void BaseDatapath::outputPerCycleActivity(
   float cycleTime = user_params.cycle_time;
   getAdderPowerArea(
       cycleTime, &add_int_power, &add_switch_power, &add_leak_power, &add_area);
+  getCmpPowerArea(
+      cycleTime, &cmp_int_power, &cmp_switch_power, &cmp_leak_power, &cmp_area);
   getMultiplierPowerArea(
       cycleTime, &mul_int_power, &mul_switch_power, &mul_leak_power, &mul_area);
   getRegisterPowerArea(cycleTime,
@@ -527,7 +536,7 @@ void BaseDatapath::outputPerCycleActivity(
       max_reg_write = regStats.at(level_id).writes;
   }
   int max_reg = max_reg_read + max_reg_write;
-  int max_add = 0, max_mul = 0, max_bit = 0, max_shifter = 0;
+  int max_add = 0, max_cmp = 0, max_mul = 0, max_bit = 0, max_shifter = 0;
   int max_fp_sp_mul = 0, max_fp_dp_mul = 0;
   int max_fp_sp_add = 0, max_fp_dp_add = 0;
   int max_trig = 0;
@@ -536,6 +545,7 @@ void BaseDatapath::outputPerCycleActivity(
     assert(max_it != func_max_activity.end());
     max_bit += max_it->second.bit;
     max_add += max_it->second.add;
+    max_cmp += max_it->second.cmp;
     max_mul += max_it->second.mul;
     max_shifter += max_it->second.shifter;
     max_fp_sp_mul += max_it->second.fp_sp_mul;
@@ -546,6 +556,7 @@ void BaseDatapath::outputPerCycleActivity(
   }
 
   float add_leakage_power = add_leak_power * max_add;
+  float cmp_leakage_power = cmp_leak_power * max_cmp;
   float mul_leakage_power = mul_leak_power * max_mul;
   float bit_leakage_power = bit_leak_power * max_bit;
   float shifter_leakage_power = shifter_leak_power * max_shifter;
@@ -560,7 +571,8 @@ void BaseDatapath::outputPerCycleActivity(
   float fp_sp_add_leakage_power = fp_sp_add_leak_power * max_fp_sp_add;
   float fp_dp_add_leakage_power = fp_dp_add_leak_power * max_fp_dp_add;
   float trig_leakage_power = trig_leak_power * max_trig;
-  float fu_leakage_power = mul_leakage_power + add_leakage_power +
+  float fu_leakage_power = mul_leakage_power + add_leakage_power + 
+                           cmp_leakage_power + 
                            reg_leakage_power + bit_leakage_power +
                            shifter_leakage_power + fp_sp_mul_leakage_power +
                            fp_dp_mul_leakage_power + fp_sp_add_leakage_power +
@@ -587,6 +599,7 @@ void BaseDatapath::outputPerCycleActivity(
             << curr_activity.fp_dp_add << ","
             << curr_activity.mul << ","
             << curr_activity.add << ","
+            << curr_activity.cmp << ","  
             << curr_activity.bit << ","
             << curr_activity.shifter << ","
             << curr_activity.trig << ",";
@@ -610,6 +623,8 @@ void BaseDatapath::outputPerCycleActivity(
                                      curr_activity.mul;
       float curr_add_dynamic_power = (add_switch_power + add_int_power) *
                                      curr_activity.add;
+      float curr_cmp_dynamic_power = (cmp_switch_power + cmp_int_power) *
+                                     curr_activity.cmp;
       float curr_bit_dynamic_power = (bit_switch_power + bit_int_power) *
                                      curr_activity.bit;
       float curr_shifter_dynamic_power =
@@ -619,7 +634,7 @@ void BaseDatapath::outputPerCycleActivity(
           (curr_fp_sp_mul_dynamic_power + curr_fp_dp_mul_dynamic_power +
            curr_fp_sp_add_dynamic_power + curr_fp_dp_add_dynamic_power +
            curr_trig_dynamic_power + curr_mul_dynamic_power +
-           curr_add_dynamic_power + curr_bit_dynamic_power +
+           curr_add_dynamic_power + curr_cmp_dynamic_power + curr_bit_dynamic_power +
            curr_shifter_dynamic_power) *
           cycleTime;
 #ifdef DEBUG
@@ -629,6 +644,7 @@ void BaseDatapath::outputPerCycleActivity(
                   << curr_fp_dp_add_dynamic_power << ","
                   << curr_mul_dynamic_power << ","
                   << curr_add_dynamic_power << ","
+                  << curr_cmp_dynamic_power << ","
                   << curr_bit_dynamic_power << ","
                   << curr_shifter_dynamic_power << ","
                   << curr_trig_dynamic_power << ",";
@@ -704,8 +720,8 @@ void BaseDatapath::outputPerCycleActivity(
 
   float mem_area = getTotalMemArea();
   float fu_area =
-      registers.getTotalArea() + add_area * max_add + mul_area * max_mul +
-      reg_area_per_bit * 32 * max_reg + bit_area * max_bit +
+      registers.getTotalArea() + add_area * max_add + cmp_area * max_cmp +
+      mul_area * max_mul + reg_area_per_bit * 32 * max_reg + bit_area * max_bit +
       shifter_area * max_shifter + fp_sp_mul_area * max_fp_sp_mul +
       fp_dp_mul_area * max_fp_dp_mul + fp_sp_add_area * max_fp_sp_add +
       fp_dp_add_area * max_fp_dp_add + trig_area * max_trig;
@@ -729,6 +745,7 @@ void BaseDatapath::outputPerCycleActivity(
   summary.mem_area = mem_area;
   summary.max_mul = max_mul;
   summary.max_add = max_add;
+  summary.max_cmp = max_cmp;
   summary.max_bit = max_bit;
   summary.max_shifter = max_shifter;
   summary.max_reg = max_reg;
@@ -792,6 +809,8 @@ void BaseDatapath::writeSummary(std::ostream& outfile,
     outfile << "Num of Multipliers (32-bit): " << summary.max_mul << std::endl;
   if (summary.max_add != 0)
     outfile << "Num of Adders (32-bit): " << summary.max_add << std::endl;
+  if (summary.max_cmp != 0)
+    outfile << "Num of Integer Comperators (32-bit): " << summary.max_cmp << std::endl;
   if (summary.max_bit != 0)
     outfile << "Num of Bit-wise Operators (32-bit): " << summary.max_bit
             << std::endl;

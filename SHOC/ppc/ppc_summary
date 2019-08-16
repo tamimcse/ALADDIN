@@ -3,21 +3,22 @@
 ===============================
 Running : ppc
 Top level function: fib_lookup
-Cycle : 32 cycles
-Avg Power: 227.486 mW
+Cycle : 33 cycles
+Avg Power: 227.105 mW
 Idle FU Cycles: 3 cycles
-Avg FU Power: 2.06394 mW
-Avg FU Dynamic Power: 2.031 mW
-Avg FU leakage Power: 0.0329391 mW
-Avg MEM Power: 225.422 mW
-Avg MEM Dynamic Power: 17.7705 mW
+Avg FU Power: 2.22148 mW
+Avg FU Dynamic Power: 2.18393 mW
+Avg FU leakage Power: 0.0375555 mW
+Avg MEM Power: 224.884 mW
+Avg MEM Dynamic Power: 17.232 mW
 Avg MEM Leakage Power: 207.652 mW
-Total Area: 1.38288e+07 uM^2
-FU Area: 3002.99 uM^2
+Total Area: 1.38293e+07 uM^2
+FU Area: 3472.38 uM^2
 MEM Area: 1.38258e+07 uM^2
+Num of Integer Comperators (32-bit): 1
 Num of Bit-wise Operators (32-bit): 2
 Num of Shifters (32-bit): 3
-Num of Registers (32-bit): 11
+Num of Registers (32-bit): 12
 ===============================
         Aladdin Results        
 ===============================

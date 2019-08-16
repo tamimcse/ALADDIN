@@ -47,6 +47,7 @@ struct MemoryActivity {
 struct FunctionActivity {
   unsigned mul;
   unsigned add;
+  unsigned cmp;
   unsigned bit;
   unsigned shifter;
   unsigned fp_sp_mul;
@@ -57,6 +58,7 @@ struct FunctionActivity {
   FunctionActivity() {
     mul = 0;
     add = 0;
+    cmp = 0;
     bit = 0;
     shifter = 0;
     fp_sp_mul = 0;
@@ -67,7 +69,7 @@ struct FunctionActivity {
   }
 
   bool is_idle() {
-    return (mul == 0 && add == 0 && bit == 0 && shifter == 0 &&
+    return (mul == 0 && add == 0 && cmp == 0 && bit == 0 && shifter == 0 &&
             fp_sp_mul == 0 && fp_dp_mul == 0 && fp_dp_add == 0 && trig == 0);
   }
 };
@@ -102,6 +104,7 @@ struct summary_data_t {
   int max_trig;
   int max_mul;
   int max_add;
+  int max_cmp;
   int max_bit;
   int max_shifter;
   int max_reg;

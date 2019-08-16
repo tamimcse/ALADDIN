@@ -401,6 +401,15 @@ class ExecNode {
         return false;
     }
   }
+  
+  bool is_int_cmp_op() const {
+    switch (microop) {
+      case LLVM_IR_ICmp:
+        return true;
+      default:
+        return false;
+    }
+  }
 
   bool is_int_add_op() const {
     switch (microop) {
@@ -429,6 +438,8 @@ class ExecNode {
           return MUL_6ns_critical_path_delay;
         else if (is_int_add_op())
           return ADD_6ns_critical_path_delay;
+        else if (is_int_cmp_op())
+          return ICMP_6ns_critical_path_delay;
         else if (is_shifter_op())
           return SHIFTER_6ns_critical_path_delay;
         else if (is_bit_op())
@@ -440,6 +451,8 @@ class ExecNode {
           return MUL_5ns_critical_path_delay;
         else if (is_int_add_op())
           return ADD_5ns_critical_path_delay;
+        else if (is_int_cmp_op())
+          return ICMP_5ns_critical_path_delay;
         else if (is_shifter_op())
           return SHIFTER_5ns_critical_path_delay;
         else if (is_bit_op())
@@ -451,6 +464,8 @@ class ExecNode {
           return MUL_4ns_critical_path_delay;
         else if (is_int_add_op())
           return ADD_4ns_critical_path_delay;
+        else if (is_int_cmp_op())
+          return ICMP_4ns_critical_path_delay;
         else if (is_shifter_op())
           return SHIFTER_4ns_critical_path_delay;
         else if (is_bit_op())
@@ -462,6 +477,8 @@ class ExecNode {
           return MUL_3ns_critical_path_delay;
         else if (is_int_add_op())
           return ADD_3ns_critical_path_delay;
+        else if (is_int_cmp_op())
+          return ICMP_3ns_critical_path_delay;
         else if (is_shifter_op())
           return SHIFTER_3ns_critical_path_delay;
         else if (is_bit_op())
@@ -473,6 +490,8 @@ class ExecNode {
           return MUL_2ns_critical_path_delay;
         else if (is_int_add_op())
           return ADD_2ns_critical_path_delay;
+        else if (is_int_cmp_op())
+          return ICMP_2ns_critical_path_delay;
         else if (is_shifter_op())
           return SHIFTER_2ns_critical_path_delay;
         else if (is_bit_op())
@@ -484,6 +503,8 @@ class ExecNode {
           return MUL_1ns_critical_path_delay;
         else if (is_int_add_op())
           return ADD_1ns_critical_path_delay;
+        else if (is_int_cmp_op())
+          return ICMP_1ns_critical_path_delay;
         else if (is_shifter_op())
           return SHIFTER_1ns_critical_path_delay;
         else if (is_bit_op())
@@ -496,6 +517,8 @@ class ExecNode {
           return MUL_6ns_critical_path_delay;
         else if (is_int_add_op())
           return ADD_6ns_critical_path_delay;
+        else if (is_int_cmp_op())
+          return ICMP_6ns_critical_path_delay;
         else if (is_shifter_op())
           return SHIFTER_6ns_critical_path_delay;
         else if (is_bit_op())
