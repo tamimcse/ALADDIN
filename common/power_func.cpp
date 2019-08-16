@@ -182,6 +182,68 @@ void getCmpPowerArea(float cycle_time,
   }
 }
 
+/*Get Power for GetElementPtr*/
+void getGEPPowerArea(float cycle_time,
+                       float* internal_power,
+                       float* switch_power,
+                       float* leakage_power,
+                       float* area) {
+  switch ((int)cycle_time) {  // cycle_time in ns
+    case 10:
+      *internal_power = GEP_10ns_int_power;
+      *switch_power = GEP_10ns_switch_power;
+      *leakage_power = GEP_10ns_leakage_power;
+      *area = GEP_10ns_area;
+      break;
+    case 6:
+      *internal_power = GEP_6ns_int_power;
+      *switch_power = GEP_6ns_switch_power;
+      *leakage_power = GEP_6ns_leakage_power;
+      *area = GEP_6ns_area;
+      break;
+    case 5:
+      *internal_power = GEP_5ns_int_power;
+      *switch_power = GEP_5ns_switch_power;
+      *leakage_power = GEP_5ns_leakage_power;
+      *area = GEP_5ns_area;
+      break;
+    case 4:
+      *internal_power = GEP_4ns_int_power;
+      *switch_power = GEP_4ns_switch_power;
+      *leakage_power = GEP_4ns_leakage_power;
+      *area = GEP_4ns_area;
+      break;
+    case 3:
+      *internal_power = GEP_3ns_int_power;
+      *switch_power = GEP_3ns_switch_power;
+      *leakage_power = GEP_3ns_leakage_power;
+      *area = GEP_3ns_area;
+      break;
+    case 2:
+      *internal_power = GEP_2ns_int_power;
+      *switch_power = GEP_2ns_switch_power;
+      *leakage_power = GEP_2ns_leakage_power;
+      *area = GEP_2ns_area;
+      break;
+    case 1:
+      *internal_power = GEP_1ns_int_power;
+      *switch_power = GEP_1ns_switch_power;
+      *leakage_power = GEP_1ns_leakage_power;
+      *area = GEP_1ns_area;
+      break;
+    default:
+      std::cerr << " Current power model supports accelerators running"
+                << " at 1, 2, 3, 4, 5, 6, and 10 ns. " << std::endl;
+      std::cerr << " Cycle time: " << cycle_time << " is not supported yet."
+                << " Use 6ns power model instead." << std::endl;
+      *internal_power = GEP_6ns_int_power;
+      *switch_power = GEP_6ns_switch_power;
+      *leakage_power = GEP_6ns_leakage_power;
+      *area = GEP_6ns_area;
+      break;
+  }
+}
+
 void getMultiplierPowerArea(float cycle_time,
                             float* internal_power,
                             float* switch_power,
