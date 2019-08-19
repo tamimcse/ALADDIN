@@ -307,9 +307,8 @@
 #define SHIFTER_10ns_area                             2.496461e+02
 #define SHIFTER_10ns_critical_path_delay              0.70
 
-/*We don't know the hardware model for ICmp, GetElementPtr and POPCNT. 
- So approximate them according to Sophia's and Sam's suggestions. 
- Here ICmp is same as ADD. GetElementptr is combination of MUL and ADD*/
+/*We don't know the hardware model for ICmp. So approximate it as an ADD 
+ * operation according to Prof. Shao.*/
 
 #define ICMP_0_5ns_int_power                           9.364555e-02
 #define ICMP_0_5ns_switch_power                        1.900256e-01
@@ -375,69 +374,74 @@
 #define ICMP_10ns_area                                 1.794430e+02
 #define ICMP_10ns_critical_path_delay                  1.75
 
-#define GEP_0_5ns_int_power                           9.364555e-02
-#define GEP_0_5ns_switch_power                        1.900256e-01
-#define GEP_0_5ns_dynamic_power                       2.836642e-01
-#define GEP_0_5ns_dynamic_energy                      1.418321e-01
-#define GEP_0_5ns_leakage_power                       3.265969e-03
-#define GEP_0_5ns_area                                3.793488e+02
-#define GEP_0_5ns_critical_path_delay                 0.47
+/*We don't know the hardware model for GetElementPtr. So approximate it
+ * according to Sam's suggestions as a two-stage operation of MUL and ADD.*/ 
 
-#define GEP_1ns_int_power                             5.523790e-02
-#define GEP_1ns_switch_power                          1.551852e-01
-#define GEP_1ns_dynamic_power                         2.104162e-01
-#define GEP_1ns_dynamic_energy                        2.104162e-01
-#define GEP_1ns_leakage_power                         2.249908e-03
-#define GEP_1ns_area                                  2.779792e+02
-#define GEP_1ns_critical_path_delay                   0.98
+#define GEP_LATENCY_IN_CYCLES                     2
 
-#define GEP_2ns_int_power                             2.436880e-02
-#define GEP_2ns_switch_power                          1.850702e-02
-#define GEP_2ns_dynamic_power                         4.287582e-02
-#define GEP_2ns_dynamic_energy                        8.575164e-02
-#define GEP_2ns_leakage_power                         2.380803e-03
-#define GEP_2ns_area                                  1.794430e+02
-#define GEP_2ns_critical_path_delay                   1.75
+#define GEP_0_5ns_int_power                           7.500944e+00 + 9.364555e-02 
+#define GEP_0_5ns_switch_power                        5.127359e+00 + 1.900256e-01
+#define GEP_0_5ns_dynamic_power                       1.262844e+01 + 2.836642e-01
+#define GEP_0_5ns_dynamic_energy                      1.894266e+01 + 1.418321e-01
+#define GEP_0_5ns_leakage_power                       1.086401e-01 + 3.265969e-03
+#define GEP_0_5ns_area                                8.340007e+03 + 3.793488e+02
+#define GEP_0_5ns_critical_path_delay                 0.47 + .47
 
-#define GEP_3ns_int_power                             1.626669e-02
-#define GEP_3ns_switch_power                          1.235638e-02
-#define GEP_3ns_dynamic_power                         2.862321e-02
-#define GEP_3ns_dynamic_energy                        8.586963e-02
-#define GEP_3ns_leakage_power                         2.380803e-03
-#define GEP_3ns_area                                  1.794430e+02
-#define GEP_3ns_critical_path_delay                   1.75
+#define GEP_1ns_int_power                             4.979808e+00 + 5.523790e-02
+#define GEP_1ns_switch_power                          7.703601e+00 + 1.551852e-01
+#define GEP_1ns_dynamic_power                         1.268341e+01 + 2.104162e-01
+#define GEP_1ns_dynamic_energy                        1.268341e+01 + 2.104162e-01
+#define GEP_1ns_leakage_power                         7.786052e-02 + 2.249908e-03
+#define GEP_1ns_area                                  6.351338e+03 + 2.779792e+02
+#define GEP_1ns_critical_path_delay                   0.98 + 0.98
 
-#define GEP_4ns_int_power                             1.217552e-02
-#define GEP_4ns_switch_power                          9.249207e-03
-#define GEP_4ns_dynamic_power                         2.142472e-02
-#define GEP_4ns_dynamic_energy                        8.569890e-02
-#define GEP_4ns_leakage_power                         2.380803e-03
-#define GEP_4ns_area                                  1.794430e+02
-#define GEP_4ns_critical_path_delay                   1.75
+#define GEP_2ns_int_power                             1.748818e+00 + 2.436880e-02
+#define GEP_2ns_switch_power                          3.028611e+00 + 1.850702e-02
+#define GEP_2ns_dynamic_power                         4.777429e+00 + 4.287582e-02
+#define GEP_2ns_dynamic_energy                        9.554858e+00 + 8.575164e-02
+#define GEP_2ns_leakage_power                         4.831147e-02 + 2.380803e-03
+#define GEP_2ns_area                                  5.137736e+03 + 1.794430e+02
+#define GEP_2ns_critical_path_delay                   1.97 + 1.75
 
-#define GEP_5ns_int_power                             9.743773e-03
-#define GEP_5ns_switch_power                          7.400587e-03
-#define GEP_5ns_dynamic_power                         1.714394e-02
-#define GEP_5ns_dynamic_energy                        8.572111e-02
-#define GEP_5ns_leakage_power                         2.380803e-03
-#define GEP_5ns_area                                  1.794430e+02
-#define GEP_5ns_critical_path_delay                   1.75
+#define GEP_3ns_int_power                             1.125718e+00 + 1.626669e-02
+#define GEP_3ns_switch_power                          1.808644e+00 + 1.235638e-02
+#define GEP_3ns_dynamic_power                         2.934361e+00 + 2.862321e-02
+#define GEP_3ns_dynamic_energy                        8.803084e+00 + 8.586963e-02
+#define GEP_3ns_leakage_power                         4.668189e-02 + 2.380803e-03
+#define GEP_3ns_area                                  4.974349e+03 + 1.794430e+02
+#define GEP_3ns_critical_path_delay                   2.97 + 1.75
 
-#define GEP_6ns_int_power                             8.115300e-03
-#define GEP_6ns_switch_power                          6.162853e-03
-#define GEP_6ns_dynamic_power                         1.427760e-02
-#define GEP_6ns_dynamic_energy                        8.566836e-02
-#define GEP_6ns_leakage_power                         2.380803e-03
-#define GEP_6ns_area                                  1.794430e+02
-#define GEP_6ns_critical_path_delay                   1.75
+#define GEP_4ns_int_power                             8.601815e-01 + 1.217552e-02
+#define GEP_4ns_switch_power                          1.305749e+00 + 9.249207e-03
+#define GEP_4ns_dynamic_power                         2.165931e+00 + 2.142472e-02
+#define GEP_4ns_dynamic_energy                        8.663723e+00 + 8.569890e-02
+#define GEP_4ns_leakage_power                         4.853217e-02 + 2.380803e-03
+#define GEP_4ns_area                                  4.619555e+03 + 1.794430e+02
+#define GEP_4ns_critical_path_delay                   3.98 + 1.75
 
-#define GEP_10ns_int_power                            4.832257e-03
-#define GEP_10ns_switch_power                         3.701820e-03
-#define GEP_10ns_dynamic_power                        8.534078e-03
-#define GEP_10ns_dynamic_energy                       8.534078e-02
-#define GEP_10ns_leakage_power                        2.380803e-03
-#define GEP_10ns_area                                 1.794430e+02
-#define GEP_10ns_critical_path_delay                  1.75
+#define GEP_5ns_int_power                             6.866739e-01 + 9.743773e-03
+#define GEP_5ns_switch_power                          1.038409e+00 + 7.400587e-03
+#define GEP_5ns_dynamic_power                         1.725082e+00 + 1.714394e-02
+#define GEP_5ns_dynamic_energy                        8.625412e+00 + 8.572111e-02
+#define GEP_5ns_leakage_power                         4.817683e-02 + 2.380803e-03
+#define GEP_5ns_area                                  4.595000e+03 + 1.794430e+02
+#define GEP_5ns_critical_path_delay                   4.17 + 1.75
+
+#define GEP_6ns_int_power                             5.725752e-01 + 8.115300e-03
+#define GEP_6ns_switch_power                          8.662890e-01 + 6.162853e-03
+#define GEP_6ns_dynamic_power                         1.438864e+00 + 1.427760e-02
+#define GEP_6ns_dynamic_energy                        8.633185e+00 + 8.566836e-02
+#define GEP_6ns_leakage_power                         4.817683e-02 + 2.380803e-03
+#define GEP_6ns_area                                  4.595000e+03 + 1.794430e+02
+#define GEP_6ns_critical_path_delay                   4.17 + 1.75
+
+#define GEP_10ns_int_power                            3.459049e-01 + 4.832257e-03
+#define GEP_10ns_switch_power                         5.337095e-01 + 3.701820e-03
+#define GEP_10ns_dynamic_power                        8.796144e-01 + 8.534078e-03
+#define GEP_10ns_dynamic_energy                       8.796144e+00 + 8.534078e-02
+#define GEP_10ns_leakage_power                        4.817683e-02 + 2.380803e-03
+#define GEP_10ns_area                                 4.595000e+03 + 1.794430e+02
+#define GEP_10ns_critical_path_delay                  4.90 + 1.75
 
 /* Floating Point Power/Area/Energy Models.
  * We use Synopsys DesignWare IP library to model 3-stage both single-precision

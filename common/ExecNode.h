@@ -537,7 +537,8 @@ class ExecNode {
     }
   }
 
-  bool is_multicycle_op() const { return is_fp_op() || is_special_math_op(); }
+  /*TODO: GEP is multicycle only for cycle_time=1-5 ns*/
+  bool is_multicycle_op() const { return is_fp_op() || is_special_math_op() || is_gep_op(); }
 
   bool is_fp_op() const {
     switch (microop) {
@@ -599,7 +600,14 @@ class ExecNode {
       // name of the special math function is in special_meth_op.
       return special_math_node_latency_in_cycles();
     }
+    else if (is_gep_op())
+        return gep_latency_in_cycles();
     return 1;
+  }
+  
+  /*TODO: This is only accurate for cycle_time = 1-5 ns */
+  unsigned gep_latency_in_cycles() const {
+      return GEP_LATENCY_IN_CYCLES;
   }
 
   unsigned fp_node_latency_in_cycles() const {

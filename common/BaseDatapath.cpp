@@ -294,7 +294,7 @@ void BaseDatapath::updatePerCycleActivity(
    * leakage power and area of multipliers are relatively significant, and no
    * reuse for adders. This way of modeling is consistent with our observation
    * of accelerators generated with Vivado. */
-  unsigned num_adds_so_far = 0, num_cmps_so_far = 0, num_geps_so_far = 0, num_bits_so_far = 0, num_shifters_so_far = 0;
+  unsigned num_adds_so_far = 0, num_cmps_so_far = 0, num_bits_so_far = 0, num_shifters_so_far = 0;
   auto bound_it = program.loop_bounds.begin();
   for (auto node_it = program.nodes.begin(); node_it != program.nodes.end();
        ++node_it) {
@@ -309,15 +309,12 @@ void BaseDatapath::updatePerCycleActivity(
         max_it->second.add = num_adds_so_far;
       if (max_it->second.cmp < num_cmps_so_far)
         max_it->second.cmp = num_cmps_so_far;
-      if (max_it->second.gep < num_geps_so_far)
-        max_it->second.gep = num_geps_so_far;
       if (max_it->second.bit < num_bits_so_far)
         max_it->second.bit = num_bits_so_far;
       if (max_it->second.shifter < num_shifters_so_far)
         max_it->second.shifter = num_shifters_so_far;
       num_adds_so_far = 0;
       num_cmps_so_far = 0;
-      num_geps_so_far = 0;
       num_bits_so_far = 0;
       num_shifters_so_far = 0;
       bound_it++;
@@ -347,7 +344,9 @@ void BaseDatapath::updatePerCycleActivity(
             fp_fu_activity.fp_sp_mul += 1;
         } else if (node->is_special_math_op()) {
           fp_fu_activity.trig += 1;
-        }
+        } else if (node->is_gep_op()) {
+          curr_fu_activity.gep += 1;
+        } 
       }
     } else if (node->is_int_mul_op()) {
       curr_fu_activity.mul += 1;
@@ -357,9 +356,6 @@ void BaseDatapath::updatePerCycleActivity(
     } else if (node->is_int_cmp_op()) {
       curr_fu_activity.cmp += 1;
       num_cmps_so_far += 1;
-    } else if (node->is_gep_op()) {
-      curr_fu_activity.gep += 1;
-      num_geps_so_far += 1;
     } else if (node->is_shifter_op()) {
       curr_fu_activity.shifter += 1;
       num_shifters_so_far += 1;
@@ -420,6 +416,12 @@ void BaseDatapath::updatePerCycleActivity(
                          [](const FunctionActivity& a, const FunctionActivity& b) {
                            return (a.trig < b.trig);
                          })->trig;
+    max_it->second.gep =
+        std::max_element(cycle_activity.begin(),
+                         cycle_activity.end(),
+                         [](const FunctionActivity& a, const FunctionActivity& b) {
+                           return (a.gep < b.gep);
+                         })->gep;
   }
 }
 
@@ -555,7 +557,6 @@ void BaseDatapath::outputPerCycleActivity(
     max_bit += max_it->second.bit;
     max_add += max_it->second.add;
     max_cmp += max_it->second.cmp;
-    max_gep += max_it->second.gep;
     max_mul += max_it->second.mul;
     max_shifter += max_it->second.shifter;
     max_fp_sp_mul += max_it->second.fp_sp_mul;
@@ -563,6 +564,7 @@ void BaseDatapath::outputPerCycleActivity(
     max_fp_sp_add += max_it->second.fp_sp_add;
     max_fp_dp_add += max_it->second.fp_dp_add;
     max_trig += max_it->second.trig;
+    max_gep += max_it->second.gep;
   }
 
   float add_leakage_power = add_leak_power * max_add;
@@ -610,11 +612,11 @@ void BaseDatapath::outputPerCycleActivity(
             << curr_activity.fp_dp_add << ","
             << curr_activity.mul << ","
             << curr_activity.add << ","
-            << curr_activity.cmp << ","
-            << curr_activity.gep << ","  
+            << curr_activity.cmp << ","  
             << curr_activity.bit << ","
             << curr_activity.shifter << ","
             << curr_activity.trig << ",";
+            << curr_activity.gep << ","
 #endif
       float curr_fp_sp_mul_dynamic_power =
           (fp_sp_mul_switch_power + fp_sp_mul_int_power) *
@@ -631,14 +633,16 @@ void BaseDatapath::outputPerCycleActivity(
       float curr_trig_dynamic_power =
           (trig_switch_power + trig_int_power) *
           curr_activity.trig;
+      float curr_gep_dynamic_power = 
+          (gep_switch_power + gep_int_power) *
+          curr_activity.gep;
       float curr_mul_dynamic_power = (mul_switch_power + mul_int_power) *
                                      curr_activity.mul;
       float curr_add_dynamic_power = (add_switch_power + add_int_power) *
                                      curr_activity.add;
       float curr_cmp_dynamic_power = (cmp_switch_power + cmp_int_power) *
                                      curr_activity.cmp;
-      float curr_gep_dynamic_power = (gep_switch_power + gep_int_power) *
-                                     curr_activity.gep;
+
       float curr_bit_dynamic_power = (bit_switch_power + bit_int_power) *
                                      curr_activity.bit;
       float curr_shifter_dynamic_power =
