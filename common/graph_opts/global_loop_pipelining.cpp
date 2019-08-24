@@ -28,8 +28,10 @@ void GlobalLoopPipelining::optimize() {
     return;
   }
 
-  if (loop_bounds.size() <= 2)
+  if (loop_bounds.size() <= 2) {
+    std::cerr << "Loop pipelining is not being applied" << std::endl;  
     return;
+  }
 
   EdgeNameMap edge_to_parid = get(boost::edge_name, graph);
 
