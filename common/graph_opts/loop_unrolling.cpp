@@ -192,6 +192,7 @@ void LoopUnrolling::optimize() {
               << "Either loop labels or line numbers are incorrect, or the\n"
               << "loop unrolling factor is larger than the loop trip count.\n"
               << "-------------------------------" << std::endl;
+    return;
   }
   updateGraphWithNewEdges(to_add_edges);
   updateGraphWithIsolatedNodes(to_remove_nodes);
