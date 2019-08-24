@@ -16,8 +16,10 @@ std::string PerLoopPipelining::getCenteredName(size_t size) {
 }
 
 void PerLoopPipelining::optimize() {
-  if (loop_bounds.size() <= 2 || user_params.pipeline.size() == 0)
+  if (loop_bounds.size() <= 2 || user_params.pipeline.size() == 0) {
+    std::cerr << "Per loop pipelining is not being used \n";
     return;
+  }
 
   if (user_params.global_pipelining) {
     std::cerr
@@ -39,6 +41,7 @@ void PerLoopPipelining::optimize() {
   //     previous iteration:
   //     a. Change the source to the FNIN of the previous iteration.
   for (const UniqueLabel& loop : user_params.pipeline) {
+      std::cout << "Pipelining 4 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
     // Step 1.
     std::list<cnode_pair_t> current_loop_bounds =
         program.findLoopBoundaries(loop);
