@@ -345,7 +345,7 @@ void BaseDatapath::updatePerCycleActivity(
         } else if (node->is_special_math_op()) {
           fp_fu_activity.trig += 1;
         } else if (node->is_gep_op()) {
-          curr_fu_activity.gep += 1;
+          fp_fu_activity.gep += 1;
         } 
       }
     } else if (node->is_int_mul_op()) {
