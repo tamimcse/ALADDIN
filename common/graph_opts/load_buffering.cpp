@@ -5,9 +5,13 @@ std::string LoadBuffering::getCenteredName(size_t size) {
 }
 
 void LoadBuffering::optimize() {
-  if (!user_params.unrolling.size() && loop_bounds.size() <= 2)
+  if (!user_params.unrolling.size() || loop_bounds.size() <= 2) {
+    std::cerr << "Load bufferring is not being applied. "
+              << "No loop unrolling configuration options found or "
+              << "Loop_bound size is less than 3" << std::endl;  
     return;
-
+  }
+  
   EdgeNameMap edge_to_parid = get(boost::edge_name, graph);
 
   vertex_iter vi, vi_end;
