@@ -294,31 +294,12 @@ void BaseDatapath::updatePerCycleActivity(
    * leakage power and area of multipliers are relatively significant, and no
    * reuse for adders. This way of modeling is consistent with our observation
    * of accelerators generated with Vivado. */
-  unsigned num_adds_so_far = 0, num_cmps_so_far = 0, num_bits_so_far = 0, num_shifters_so_far = 0;
-  auto bound_it = program.loop_bounds.begin();
   for (auto node_it = program.nodes.begin(); node_it != program.nodes.end();
        ++node_it) {
     ExecNode* node = node_it->second;
     // TODO: On every iteration, this could be a bottleneck.
     const std::string& func_id = node->get_static_function()->get_name();
-    auto max_it = func_max_activity.find(func_id);
-    assert(max_it != func_max_activity.end());
 
-    if (node->get_node_id() == bound_it->node_id) {
-      if (max_it->second.add < num_adds_so_far)
-        max_it->second.add = num_adds_so_far;
-      if (max_it->second.cmp < num_cmps_so_far)
-        max_it->second.cmp = num_cmps_so_far;
-      if (max_it->second.bit < num_bits_so_far)
-        max_it->second.bit = num_bits_so_far;
-      if (max_it->second.shifter < num_shifters_so_far)
-        max_it->second.shifter = num_shifters_so_far;
-      num_adds_so_far = 0;
-      num_cmps_so_far = 0;
-      num_bits_so_far = 0;
-      num_shifters_so_far = 0;
-      bound_it++;
-    }
     if (node->is_isolated())
       continue;
     int node_level = node->get_start_execution_cycle();
@@ -352,16 +333,12 @@ void BaseDatapath::updatePerCycleActivity(
       curr_fu_activity.mul += 1;
     } else if (node->is_int_add_op()) {
       curr_fu_activity.add += 1;
-      num_adds_so_far += 1;
     } else if (node->is_int_cmp_op()) {
       curr_fu_activity.cmp += 1;
-      num_cmps_so_far += 1;
     } else if (node->is_shifter_op()) {
       curr_fu_activity.shifter += 1;
-      num_shifters_so_far += 1;
     } else if (node->is_bit_op()) {
       curr_fu_activity.bit += 1;
-      num_bits_so_far += 1;
     } else if (node->is_load_op()) {
       const std::string& array_label = node->get_array_label();
       int bytes_read = node->get_mem_access()->size;
@@ -422,6 +399,30 @@ void BaseDatapath::updatePerCycleActivity(
                          [](const FunctionActivity& a, const FunctionActivity& b) {
                            return (a.gep < b.gep);
                          })->gep;
+    max_it->second.add =
+        std::max_element(cycle_activity.begin(),
+                         cycle_activity.end(),
+                         [](const FunctionActivity& a, const FunctionActivity& b) {
+                           return (a.add < b.add);
+                         })->add;
+    max_it->second.cmp =
+        std::max_element(cycle_activity.begin(),
+                         cycle_activity.end(),
+                         [](const FunctionActivity& a, const FunctionActivity& b) {
+                           return (a.cmp < b.cmp);
+                         })->cmp;
+    max_it->second.bit =
+        std::max_element(cycle_activity.begin(),
+                         cycle_activity.end(),
+                         [](const FunctionActivity& a, const FunctionActivity& b) {
+                           return (a.bit < b.bit);
+                         })->bit;
+    max_it->second.shifter =
+        std::max_element(cycle_activity.begin(),
+                         cycle_activity.end(),
+                         [](const FunctionActivity& a, const FunctionActivity& b) {
+                           return (a.shifter < b.shifter);
+                         })->shifter;
   }
 }
 
