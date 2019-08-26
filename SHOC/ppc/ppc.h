@@ -41,11 +41,13 @@
 
 #define MSK 0X8000000000000000ULL
 
+#define DEF_NH 1
+
 struct bitmap_pc {
     uint64_t bitmap;
     uint16_t popcnt;
 };
 
-void fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32,
+uint8_t fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32,
 	struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *C40, struct bitmap_pc *B48, uint8_t *N48, struct bitmap_pc *C48,
-	struct bitmap_pc *B64, uint8_t *N64, uint64_t ip, uint8_t *nh);
+	struct bitmap_pc *B64, uint8_t *N64, uint64_t ip);
