@@ -1,67 +1,48 @@
 #include "sail.h"
 
-void fib_lookup(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N32, uint16_t *C32, uint8_t *N40, uint16_t *C40, uint8_t *N48, uint16_t *C48,
-		uint8_t *N56, uint16_t *C56, uint8_t *N64, uint64_t ip, uint8_t *nh){
-  uint16_t nix;
-  uint32_t cix;
+uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N32, uint16_t *C32, uint8_t *N40, uint16_t *C40, uint8_t *N48, uint16_t *C48,
+		uint8_t *N56, uint16_t *C56, uint8_t *N64, uint64_t ip){
+    uint16_t nix;
+    uint32_t cix;
+    uint8_t nh;
 
     nix = ip >> 48;
 
     if (N16[nix])
-	*nh = N16[nix];
+	nh = N16[nix];
 
     if (C16[nix]) {
 	nix = (C16[nix] - 1) * 256 + ((ip >> 40) & 0XFF);
+        if (N24[nix])
+	    nh = N24[nix];
+        if (C24[nix]) {
+	    nix = (C24[nix] - 1) * 256 + ((ip >> 32) & 0XFF);
+            if (N32[nix])
+	        nh = N32[nix];
+	    if (C32[nix]) {
+		nix = (C32[nix] - 1) * 256 + ((ip >> 24) & 0XFF);
+	    	if (N40[nix])
+		    nh = N40[nix];
+	        if (C40[nix]) {
+		    nix = (C40[nix] - 1) * 256 + ((ip >> 16) & 0XFF);
+		    if (N48[nix])
+			nh = N48[nix];
+		    if (C48[nix]) {
+		        nix = (C48[nix] - 1) * 256 + ((ip >> 8) & 0XFF);
+		        if (N56[nix])
+			    nh = N56[nix];
+		        if (C56[nix]) {
+			    nix = (C56[nix] - 1) * 256 + (ip & 0XFF);
+		            if (N64[nix])
+			        nh = N64[nix];
+		        }
+    		    }
+	        }
+    	    }
+        }
     }
 
-    if (N24[nix])
-	*nh = N24[nix];
-
-    if (C24[nix]) {
-	nix = (C24[nix] - 1) * 256 + ((ip >> 32) & 0XFF);
-    } else {
-	return;
-    }
-
-    if (N32[nix])
-	*nh = N32[nix];
-
-    if (C32[nix]) {
-	nix = (C32[nix] - 1) * 256 + ((ip >> 24) & 0XFF);
-    } else {
-	return;
-    }
-
-    if (N40[nix])
-	*nh = N40[nix];
-
-    if (C40[nix]) {
-	nix = (C40[nix] - 1) * 256 + ((ip >> 16) & 0XFF);
-    } else {
-	return;
-    }
-
-    if (N48[nix])
-	*nh = N48[nix];
-
-    if (C48[nix]) {
-	nix = (C48[nix] - 1) * 256 + ((ip >> 8) & 0XFF);
-    } else {
-	return;
-    }
-
-    if (N56[nix])
-	*nh = N56[nix];
-
-    if (C56[nix]) {
-	nix = (C56[nix] - 1) * 256 + (ip & 0XFF);
-    } else {
-	return;
-    }
-
-    if (N64[nix])
-	*nh = N64[nix];
-
+    return nh;
 }
 
 int main(){
@@ -101,7 +82,7 @@ int main(){
 		C56[i] = 1;
 		N64[i] = 1;
 	}
-	fib_lookup(&N16[0], &C16[0], &N24[0], &C24[0], &N32[0], &C32[0], &N40[0], &C40[0], &N48[0], &C48[0], &N56[0], &C56[0], &N64[0], 67, &nh);
+	nh = fib_lookup(&N16[0], &C16[0], &N24[0], &C24[0], &N32[0], &C32[0], &N40[0], &C40[0], &N48[0], &C48[0], &N56[0], &C56[0], &N64[0], 67);
 
   FILE *output;
   output = fopen("output.data", "w");
