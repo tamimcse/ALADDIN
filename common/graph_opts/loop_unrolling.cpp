@@ -67,6 +67,10 @@ void LoopUnrolling::optimize() {
     if (!first) {
       // prev_branch should not be anything but a branch node.
       if (node->is_branch_op()) {
+      auto unroll_it = getUnrollFactor(node);
+      //The branch is not a loop
+      if (unroll_it == user_params.unrolling.end() || unroll_it->second == 0)
+          continue;
         first = true;
         loop_bounds.push_back(dyn_bound);
         prev_branch = node;
@@ -184,7 +188,9 @@ void LoopUnrolling::optimize() {
       }
     }
   }
-  loop_bounds.push_back(DynLoopBound(exec_nodes.size(), 0));
+  //Only do it for loop. Don't falsely do it for a branch
+  if (first)
+    loop_bounds.push_back(DynLoopBound(exec_nodes.size(), 0));
 
   if (iter_counts == 0 && user_params.unrolling.size() != 0) {
     std::cerr << "-------------------------------\n"
