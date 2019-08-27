@@ -75,12 +75,22 @@ bool BaseAladdinOpt::isPrunableNode(ExecNode* node) const {
   // DMA stores modify host memory so they cannot be pruned. DMA loads may
   // appear isolated, but in fact it could affect program execution in a future
   // invocation of the same accelerator, so they cannot be pruned either.
-  //
+  if (node->is_dma_op())
+    return false;
+  
+  // ICmp may have zero children -- this might be the result 
+  // speculative branching. 
+  if (node->is_int_cmp_op())
+      return false;
+
   // Branch nodes may have zero children -- this might be the result of loop
   // pipelining -- and they cannot be removed because this could result in the
-  // ancestors of the branch nodes also being removed.
-  if (node->is_dma_op() || node->is_branch_op())
-    return false;
+  // ancestors of the branch nodes also being removed. 
+ 
+  // As we don't support loop at this moment  
+//  if (node->is_branch_op())
+//      return false;  
+  
 
   // In ready mode, we don't add any memory dependencies between dmaLoads and
   // future loads/stores, because this dependence is captured by the full/empty
