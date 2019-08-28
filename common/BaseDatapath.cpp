@@ -209,7 +209,10 @@ void BaseDatapath::printSchedule () {
         continue;
     std::cout << node->get_microop_name() << ": ";
     std::cout << node->get_start_execution_cycle() + 1 << "-";
-    std::cout << node->get_complete_execution_cycle() + 1 << std::endl;
+    if (node->is_multicycle_op())
+        std::cout << node->get_complete_execution_cycle() << std::endl;
+    else 
+        std::cout << node->get_complete_execution_cycle() + 1 << std::endl;
   }
 }
 
