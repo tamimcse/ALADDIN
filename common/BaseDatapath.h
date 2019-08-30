@@ -402,7 +402,10 @@ class BaseDatapath {
   // Completely partitioned arrays.
   Registers registers;
 
+  //Register activity for each cycle. Note that register is needed in cycle
+  //boundary.
   std::vector<RegStatEntry> regStats;
+  //List of workload functions
   std::unordered_set<std::string> functionNames;
   std::vector<DynLoopBound> loopBound;
 
