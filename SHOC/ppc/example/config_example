@@ -16,3 +16,4 @@ partition,complete,nh,1
 unrolling,ppc,ppc,2
 pipelining,1
 cycle_time,1
+fu_reuse,0
