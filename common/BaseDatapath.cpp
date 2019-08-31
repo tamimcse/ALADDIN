@@ -235,6 +235,7 @@ void BaseDatapath::writePerCycleActivity() {
   /* Activity per function in the code. Indexed by function names.  */
   cycle_activity_map<FunctionActivity> func_activity;
   std::unordered_map<std::string, FunctionActivity> func_max_activity;
+  std::unordered_map<std::string, FunctionActivity> func_total_activity;
   /* Activity per array. Indexed by array names.  */
   cycle_activity_map<MemoryActivity> mem_activity;
 
@@ -248,15 +249,17 @@ void BaseDatapath::writePerCycleActivity() {
                        mem_activity,
                        func_activity,
                        func_max_activity,
+                       func_total_activity,
                        num_cycles);
 
-  updatePerCycleActivity(mem_activity, func_activity, func_max_activity);
+  updatePerCycleActivity(mem_activity, func_activity, func_max_activity, func_total_activity);
 
   outputPerCycleActivity(comp_partition_names,
                          mem_partition_names,
                          mem_activity,
                          func_activity,
-                         func_max_activity);
+                         func_max_activity,
+                         func_total_activity);
 }
 
 void BaseDatapath::initPerCycleActivity(
@@ -265,6 +268,7 @@ void BaseDatapath::initPerCycleActivity(
     cycle_activity_map<MemoryActivity>& mem_activity,
     cycle_activity_map<FunctionActivity>& func_activity,
     std::unordered_map<std::string, FunctionActivity>& func_max_activity,
+    std::unordered_map<std::string, FunctionActivity>& func_total_activity,
     int num_cycles) {
   for (auto it = comp_partition_names.begin(); it != comp_partition_names.end();
        ++it) {
@@ -280,13 +284,15 @@ void BaseDatapath::initPerCycleActivity(
     FunctionActivity tmp;
     func_activity.insert({ *it, std::vector<FunctionActivity>(num_cycles, tmp) });
     func_max_activity.insert({ *it, tmp });
+    func_total_activity.insert({ *it, tmp });
   }
 }
 
 void BaseDatapath::updatePerCycleActivity(
     cycle_activity_map<MemoryActivity>& mem_activity,
     cycle_activity_map<FunctionActivity>& func_activity,
-    std::unordered_map<std::string, FunctionActivity>& func_max_activity) {
+    std::unordered_map<std::string, FunctionActivity>& func_max_activity,
+    std::unordered_map<std::string, FunctionActivity>& func_total_activity) {
   /* We use two ways to count the number of functional units in accelerators:
    * one assumes that functional units can be reused in the same region; the
    * other assumes no reuse of functional units. The advantage of reusing is
@@ -427,6 +433,46 @@ void BaseDatapath::updatePerCycleActivity(
                            return (a.shifter < b.shifter);
                          })->shifter;
   }
+  
+  /* Here we calculate the total number of FUs in order to calculate 
+   * leakage power and area when FUs are not shared at all. If the
+   * Initiation Interval (II) and throughput of the accelerator are 1,
+   * then FU cannot be reused. This will increase the area and leakage power
+   * compared to reusing the FUs.*/
+  for (auto node_it = program.nodes.begin(); node_it != program.nodes.end();
+       ++node_it) {
+    ExecNode* node = node_it->second;
+    // TODO: On every iteration, this could be a bottleneck.
+    const std::string& func_id = node->get_static_function()->get_name();
+    auto total_it = func_total_activity.find(func_id);
+    assert(total_it != func_total_activity.end());
+
+    if (node->is_fp_add_op()) {
+      if (node->is_double_precision())
+        total_it->second.fp_dp_add += 1;
+      else
+        total_it->second.fp_sp_add += 1;
+    } else if (node->is_fp_mul_op()) {
+      if (node->is_double_precision())
+        total_it->second.fp_dp_mul += 1;
+      else
+        total_it->second.fp_sp_mul += 1;
+    } else if (node->is_special_math_op()) {
+      total_it->second.trig += 1;
+    } else if (node->is_gep_op()) {
+      total_it->second.gep += 1;
+    } else if (node->is_int_mul_op()) {
+      total_it->second.mul += 1;
+    } else if (node->is_int_add_op()) {
+      total_it->second.add += 1;
+    } else if (node->is_int_cmp_op()) {
+      total_it->second.cmp += 1;
+    } else if (node->is_shifter_op()) {
+      total_it->second.shifter += 1;
+    } else if (node->is_bit_op()) {
+      total_it->second.bit += 1;
+    }
+  }
 }
 
 void BaseDatapath::outputPerCycleActivity(
@@ -434,7 +480,8 @@ void BaseDatapath::outputPerCycleActivity(
     std::vector<std::string>& mem_partition_names,
     cycle_activity_map<MemoryActivity>& mem_activity,
     cycle_activity_map<FunctionActivity>& func_activity,
-    std::unordered_map<std::string, FunctionActivity>& func_max_activity) {
+    std::unordered_map<std::string, FunctionActivity>& func_max_activity,
+    std::unordered_map<std::string, FunctionActivity>& func_total_activity) {
   /*Set the constants*/
   float add_int_power, add_switch_power, add_leak_power, add_area;
   float cmp_int_power, cmp_switch_power, cmp_leak_power, cmp_area;
@@ -570,216 +617,453 @@ void BaseDatapath::outputPerCycleActivity(
     max_trig += max_it->second.trig;
     max_gep += max_it->second.gep;
   }
-
-  float add_leakage_power = add_leak_power * max_add;
-  float cmp_leakage_power = cmp_leak_power * max_cmp;
-  float gep_leakage_power = gep_leak_power * max_gep;
-  float mul_leakage_power = mul_leak_power * max_mul;
-  float bit_leakage_power = bit_leak_power * max_bit;
-  float shifter_leakage_power = shifter_leak_power * max_shifter;
-  // Total leakage power is the sum of leakage from the explicitly named
-  // registers (completely partitioned registers) and the inferred flops from
-  // the functional units.
-  float fu_flop_leakage_power = reg_leak_power_per_bit * 32 * max_reg;
-  float reg_leakage_power =
-      registers.getTotalLeakagePower() + fu_flop_leakage_power;
-  float fp_sp_mul_leakage_power = fp_sp_mul_leak_power * max_fp_sp_mul;
-  float fp_dp_mul_leakage_power = fp_dp_mul_leak_power * max_fp_dp_mul;
-  float fp_sp_add_leakage_power = fp_sp_add_leak_power * max_fp_sp_add;
-  float fp_dp_add_leakage_power = fp_dp_add_leak_power * max_fp_dp_add;
-  float trig_leakage_power = trig_leak_power * max_trig;
-  float fu_leakage_power = mul_leakage_power + add_leakage_power + 
-                           cmp_leakage_power + gep_leakage_power +
-                           reg_leakage_power + bit_leakage_power +
-                           shifter_leakage_power + fp_sp_mul_leakage_power +
-                           fp_dp_mul_leakage_power + fp_sp_add_leakage_power +
-                           fp_dp_add_leakage_power + trig_leakage_power;
-  /*Finish calculating the number of FUs and leakage power*/
-
-  float fu_dynamic_energy = 0;
-
-  /*Start writing per cycle activity */
-  for (unsigned curr_level = 0; ((int)curr_level) < num_cycles; ++curr_level) {
-#ifdef DEBUG
-    stats << curr_level << ",";
-    power_stats << curr_level << ",";
-#endif
-    bool is_fu_idle = true;
-    // For FUs
-    for (auto it = functionNames.begin(); it != functionNames.end(); ++it) {
-      FunctionActivity& curr_activity = func_activity.at(*it).at(curr_level);
-      is_fu_idle &= curr_activity.is_idle();
-#ifdef DEBUG
-      stats << curr_activity.fp_sp_mul << ","
-            << curr_activity.fp_dp_mul << ","
-            << curr_activity.fp_sp_add << ","
-            << curr_activity.fp_dp_add << ","
-            << curr_activity.mul << ","
-            << curr_activity.add << ","
-            << curr_activity.cmp << ","  
-            << curr_activity.bit << ","
-            << curr_activity.shifter << ","
-            << curr_activity.trig << ",";
-            << curr_activity.gep << ","
-#endif
-      float curr_fp_sp_mul_dynamic_power =
-          (fp_sp_mul_switch_power + fp_sp_mul_int_power) *
-          curr_activity.fp_sp_mul;
-      float curr_fp_dp_mul_dynamic_power =
-          (fp_dp_mul_switch_power + fp_dp_mul_int_power) *
-          curr_activity.fp_dp_mul;
-      float curr_fp_sp_add_dynamic_power =
-          (fp_sp_add_switch_power + fp_sp_add_int_power) *
-          curr_activity.fp_sp_add;
-      float curr_fp_dp_add_dynamic_power =
-          (fp_dp_add_switch_power + fp_dp_add_int_power) *
-          curr_activity.fp_dp_add;
-      float curr_trig_dynamic_power =
-          (trig_switch_power + trig_int_power) *
-          curr_activity.trig;
-      float curr_gep_dynamic_power = 
-          (gep_switch_power + gep_int_power) *
-          curr_activity.gep;
-      float curr_mul_dynamic_power = (mul_switch_power + mul_int_power) *
-                                     curr_activity.mul;
-      float curr_add_dynamic_power = (add_switch_power + add_int_power) *
-                                     curr_activity.add;
-      float curr_cmp_dynamic_power = (cmp_switch_power + cmp_int_power) *
-                                     curr_activity.cmp;
-
-      float curr_bit_dynamic_power = (bit_switch_power + bit_int_power) *
-                                     curr_activity.bit;
-      float curr_shifter_dynamic_power =
-          (shifter_switch_power + shifter_int_power) *
-          curr_activity.shifter;
-      fu_dynamic_energy +=
-          (curr_fp_sp_mul_dynamic_power + curr_fp_dp_mul_dynamic_power +
-           curr_fp_sp_add_dynamic_power + curr_fp_dp_add_dynamic_power +
-           curr_trig_dynamic_power + curr_mul_dynamic_power +
-           curr_add_dynamic_power + curr_cmp_dynamic_power +
-           curr_gep_dynamic_power + curr_bit_dynamic_power +
-           curr_shifter_dynamic_power) *
-          cycleTime;
-#ifdef DEBUG
-      power_stats << curr_fp_sp_mul_dynamic_power << ","
-                  << curr_fp_dp_mul_dynamic_power << ","
-                  << curr_fp_sp_add_dynamic_power << ","
-                  << curr_fp_dp_add_dynamic_power << ","
-                  << curr_mul_dynamic_power << ","
-                  << curr_add_dynamic_power << ","
-                  << curr_cmp_dynamic_power << ","
-                  << curr_gep_dynamic_power << ","
-                  << curr_bit_dynamic_power << ","
-                  << curr_shifter_dynamic_power << ","
-                  << curr_trig_dynamic_power << ",";
-#endif
-    }
-    // These are inferred flops from functional unit activity. They are assumed
-    // to be 4-byte accesses.
-    int curr_reg_reads = regStats.at(curr_level).reads;
-    int curr_reg_writes = regStats.at(curr_level).writes;
-    float curr_reg_read_dynamic_energy =
-        (reg_int_power_per_bit + reg_switch_power_per_bit) * curr_reg_reads *
-        32 * cycleTime;
-    float curr_reg_write_dynamic_energy =
-        (reg_int_power_per_bit + reg_switch_power_per_bit) * curr_reg_writes *
-        32 * cycleTime;
-    for (auto it = comp_partition_names.begin();
-         it != comp_partition_names.end();
-         ++it) {
-      Register* reg = registers.getRegister(*it);
-      int reg_bytes_read = mem_activity.at(*it).at(curr_level).bytes_read;
-      int reg_bytes_written = mem_activity.at(*it).at(curr_level).bytes_write;
-      int reg_words_read = ceil(((float)reg_bytes_read)/reg->getWordSize());
-      int reg_words_written = ceil(((float)reg_bytes_written)/reg->getWordSize());
-      int reg_read_energy = registers.getReadEnergy(*it) * reg_words_read;
-      int reg_write_energy = registers.getReadEnergy(*it) * reg_words_written;
-
-      curr_reg_reads += reg_words_read;
-      curr_reg_writes += reg_words_written;
-      curr_reg_read_dynamic_energy += reg_read_energy;
-      curr_reg_write_dynamic_energy += reg_write_energy;
-    }
-    fu_dynamic_energy +=
-        curr_reg_read_dynamic_energy + curr_reg_write_dynamic_energy;
-
-#ifdef DEBUG
-    stats << curr_reg_reads << "," << curr_reg_writes << ",";
-
-    for (auto it = mem_partition_names.begin(); it != mem_partition_names.end();
-         ++it) {
-      const std::string& array_name = *it;
-      const PartitionEntry &entry = user_params.getArrayConfig(array_name);
-      int mem_bytes_read = mem_activity.at(array_name).at(curr_level).bytes_read;
-      int mem_bytes_written = mem_activity.at(array_name).at(curr_level).bytes_write;
-      int mem_words_read = ceil(((float)mem_bytes_read) / entry.wordsize);
-      int mem_words_written = ceil(((float)mem_bytes_written) / entry.wordsize);
-      stats << mem_words_read << "," << mem_words_written << ",";
-    }
-    stats << std::endl;
-    power_stats << (curr_reg_read_dynamic_energy / cycleTime) +
-                       (reg_leakage_power / 2)
-                << ","
-                << (curr_reg_write_dynamic_energy / cycleTime) +
-                       (reg_leakage_power / 2)
-                << ",";
-    power_stats << std::endl;
-#endif
-    if (is_fu_idle)
-      idle_fu_cycles++;
+  
+  int tot_reg_read = 0, tot_reg_write = 0;
+  for (unsigned level_id = 0; ((int)level_id) < num_cycles; ++level_id) {
+      tot_reg_read += regStats.at(level_id).reads;
+      tot_reg_write = regStats.at(level_id).writes;
   }
-#ifdef DEBUG
-  stats.close();
-  power_stats.close();
-#endif
-
-  float avg_mem_power = 0, avg_mem_dynamic_power = 0, mem_leakage_power = 0;
-
-  getAverageMemPower(
-      num_cycles, &avg_mem_power, &avg_mem_dynamic_power, &mem_leakage_power);
-
-  float avg_fu_dynamic_power = fu_dynamic_energy / (cycleTime * num_cycles);
-  float avg_fu_power = avg_fu_dynamic_power + fu_leakage_power;
-  float avg_power = avg_fu_power + avg_mem_power;
-
-  float mem_area = getTotalMemArea();
-  float fu_area =
-      registers.getTotalArea() + add_area * max_add + cmp_area * max_cmp +
-      gep_area * max_gep + mul_area * max_mul +
-      reg_area_per_bit * 32 * max_reg + bit_area * max_bit +
-      shifter_area * max_shifter + fp_sp_mul_area * max_fp_sp_mul +
-      fp_dp_mul_area * max_fp_dp_mul + fp_sp_add_area * max_fp_sp_add +
-      fp_dp_add_area * max_fp_dp_add + trig_area * max_trig;
-  float total_area = mem_area + fu_area;
-
-  // Summary output.
+  int tot_reg = tot_reg_read + tot_reg_write;
+  int tot_add = 0, tot_cmp = 0, tot_gep = 0, tot_mul = 0, tot_bit = 0, tot_shifter = 0;
+  int tot_fp_sp_mul = 0, tot_fp_dp_mul = 0;
+  int tot_fp_sp_add = 0, tot_fp_dp_add = 0;
+  int tot_trig = 0;
+  for (auto it = functionNames.begin(); it != functionNames.end(); ++it) {
+    auto tot_it = func_total_activity.find(*it);
+    assert(tot_it != func_total_activity.end());
+    tot_bit += tot_it->second.bit;
+    tot_add += tot_it->second.add;
+    tot_cmp += tot_it->second.cmp;
+    tot_mul += tot_it->second.mul;
+    tot_shifter += tot_it->second.shifter;
+    tot_fp_sp_mul += tot_it->second.fp_sp_mul;
+    tot_fp_dp_mul += tot_it->second.fp_dp_mul;
+    tot_fp_sp_add += tot_it->second.fp_sp_add;
+    tot_fp_dp_add += tot_it->second.fp_dp_add;
+    tot_trig += tot_it->second.trig;
+    tot_gep += tot_it->second.gep;
+  }
+  
   summary_data_t summary;
-  summary.benchName = benchName;
-  summary.topLevelFunctionName = topLevelFunctionName;
-  summary.num_cycles = num_cycles;
-  summary.idle_fu_cycles = idle_fu_cycles;
-  summary.avg_power = avg_power;
-  summary.avg_fu_power = avg_fu_power;
-  summary.avg_fu_dynamic_power = avg_fu_dynamic_power;
-  summary.fu_leakage_power = fu_leakage_power;
-  summary.avg_mem_power = avg_mem_power;
-  summary.avg_mem_dynamic_power = avg_mem_dynamic_power;
-  summary.mem_leakage_power = mem_leakage_power;
-  summary.total_area = total_area;
-  summary.fu_area = fu_area;
-  summary.mem_area = mem_area;
-  summary.max_mul = max_mul;
-  summary.max_add = max_add;
-  summary.max_cmp = max_cmp;
-  summary.max_gep = max_gep;
-  summary.max_bit = max_bit;
-  summary.max_shifter = max_shifter;
-  summary.max_reg = max_reg;
-  summary.max_fp_sp_mul = max_fp_sp_mul;
-  summary.max_fp_dp_mul = max_fp_dp_mul;
-  summary.max_fp_sp_add = max_fp_sp_add;
-  summary.max_fp_dp_add = max_fp_dp_add;
-  summary.max_trig = max_trig;
+  if (user_params.fu_reuse) {
+    float add_leakage_power = add_leak_power * max_add;
+    float cmp_leakage_power = cmp_leak_power * max_cmp;
+    float gep_leakage_power = gep_leak_power * max_gep;
+    float mul_leakage_power = mul_leak_power * max_mul;
+    float bit_leakage_power = bit_leak_power * max_bit;
+    float shifter_leakage_power = shifter_leak_power * max_shifter;
+    // Total leakage power is the sum of leakage from the explicitly named
+    // registers (completely partitioned registers) and the inferred flops from
+    // the functional units.
+    float fu_flop_leakage_power = reg_leak_power_per_bit * 32 * max_reg;
+    float reg_leakage_power =
+        registers.getTotalLeakagePower() + fu_flop_leakage_power;
+    float fp_sp_mul_leakage_power = fp_sp_mul_leak_power * max_fp_sp_mul;
+    float fp_dp_mul_leakage_power = fp_dp_mul_leak_power * max_fp_dp_mul;
+    float fp_sp_add_leakage_power = fp_sp_add_leak_power * max_fp_sp_add;
+    float fp_dp_add_leakage_power = fp_dp_add_leak_power * max_fp_dp_add;
+    float trig_leakage_power = trig_leak_power * max_trig;
+    float fu_leakage_power = mul_leakage_power + add_leakage_power + 
+                             cmp_leakage_power + gep_leakage_power +
+                             reg_leakage_power + bit_leakage_power +
+                             shifter_leakage_power + fp_sp_mul_leakage_power +
+                             fp_dp_mul_leakage_power + fp_sp_add_leakage_power +
+                             fp_dp_add_leakage_power + trig_leakage_power;
+    /*Finish calculating the number of FUs and leakage power*/
+
+    float fu_dynamic_energy = 0;
+
+    /*Start writing per cycle activity */
+    for (unsigned curr_level = 0; ((int)curr_level) < num_cycles; ++curr_level) {
+  #ifdef DEBUG
+      stats << curr_level << ",";
+      power_stats << curr_level << ",";
+  #endif
+      bool is_fu_idle = true;
+      // For FUs
+      for (auto it = functionNames.begin(); it != functionNames.end(); ++it) {
+        FunctionActivity& curr_activity = func_activity.at(*it).at(curr_level);
+        is_fu_idle &= curr_activity.is_idle();
+  #ifdef DEBUG
+        stats << curr_activity.fp_sp_mul << ","
+              << curr_activity.fp_dp_mul << ","
+              << curr_activity.fp_sp_add << ","
+              << curr_activity.fp_dp_add << ","
+              << curr_activity.mul << ","
+              << curr_activity.add << ","
+              << curr_activity.cmp << ","  
+              << curr_activity.bit << ","
+              << curr_activity.shifter << ","
+              << curr_activity.trig << ",";
+              << curr_activity.gep << ","
+  #endif
+        float curr_fp_sp_mul_dynamic_power =
+            (fp_sp_mul_switch_power + fp_sp_mul_int_power) *
+            curr_activity.fp_sp_mul;
+        float curr_fp_dp_mul_dynamic_power =
+            (fp_dp_mul_switch_power + fp_dp_mul_int_power) *
+            curr_activity.fp_dp_mul;
+        float curr_fp_sp_add_dynamic_power =
+            (fp_sp_add_switch_power + fp_sp_add_int_power) *
+            curr_activity.fp_sp_add;
+        float curr_fp_dp_add_dynamic_power =
+            (fp_dp_add_switch_power + fp_dp_add_int_power) *
+            curr_activity.fp_dp_add;
+        float curr_trig_dynamic_power =
+            (trig_switch_power + trig_int_power) *
+            curr_activity.trig;
+        float curr_gep_dynamic_power = 
+            (gep_switch_power + gep_int_power) *
+            curr_activity.gep;
+        float curr_mul_dynamic_power = (mul_switch_power + mul_int_power) *
+                                       curr_activity.mul;
+        float curr_add_dynamic_power = (add_switch_power + add_int_power) *
+                                       curr_activity.add;
+        float curr_cmp_dynamic_power = (cmp_switch_power + cmp_int_power) *
+                                       curr_activity.cmp;
+
+        float curr_bit_dynamic_power = (bit_switch_power + bit_int_power) *
+                                       curr_activity.bit;
+        float curr_shifter_dynamic_power =
+            (shifter_switch_power + shifter_int_power) *
+            curr_activity.shifter;
+        fu_dynamic_energy +=
+            (curr_fp_sp_mul_dynamic_power + curr_fp_dp_mul_dynamic_power +
+             curr_fp_sp_add_dynamic_power + curr_fp_dp_add_dynamic_power +
+             curr_trig_dynamic_power + curr_mul_dynamic_power +
+             curr_add_dynamic_power + curr_cmp_dynamic_power +
+             curr_gep_dynamic_power + curr_bit_dynamic_power +
+             curr_shifter_dynamic_power) *
+            cycleTime;
+  #ifdef DEBUG
+        power_stats << curr_fp_sp_mul_dynamic_power << ","
+                    << curr_fp_dp_mul_dynamic_power << ","
+                    << curr_fp_sp_add_dynamic_power << ","
+                    << curr_fp_dp_add_dynamic_power << ","
+                    << curr_mul_dynamic_power << ","
+                    << curr_add_dynamic_power << ","
+                    << curr_cmp_dynamic_power << ","
+                    << curr_gep_dynamic_power << ","
+                    << curr_bit_dynamic_power << ","
+                    << curr_shifter_dynamic_power << ","
+                    << curr_trig_dynamic_power << ",";
+  #endif
+      }
+      // These are inferred flops from functional unit activity. They are assumed
+      // to be 4-byte accesses.
+      int curr_reg_reads = regStats.at(curr_level).reads;
+      int curr_reg_writes = regStats.at(curr_level).writes;
+      float curr_reg_read_dynamic_energy =
+          (reg_int_power_per_bit + reg_switch_power_per_bit) * curr_reg_reads *
+          32 * cycleTime;
+      float curr_reg_write_dynamic_energy =
+          (reg_int_power_per_bit + reg_switch_power_per_bit) * curr_reg_writes *
+          32 * cycleTime;
+      for (auto it = comp_partition_names.begin();
+           it != comp_partition_names.end();
+           ++it) {
+        Register* reg = registers.getRegister(*it);
+        int reg_bytes_read = mem_activity.at(*it).at(curr_level).bytes_read;
+        int reg_bytes_written = mem_activity.at(*it).at(curr_level).bytes_write;
+        int reg_words_read = ceil(((float)reg_bytes_read)/reg->getWordSize());
+        int reg_words_written = ceil(((float)reg_bytes_written)/reg->getWordSize());
+        int reg_read_energy = registers.getReadEnergy(*it) * reg_words_read;
+        int reg_write_energy = registers.getReadEnergy(*it) * reg_words_written;
+
+        curr_reg_reads += reg_words_read;
+        curr_reg_writes += reg_words_written;
+        curr_reg_read_dynamic_energy += reg_read_energy;
+        curr_reg_write_dynamic_energy += reg_write_energy;
+      }
+      fu_dynamic_energy +=
+          curr_reg_read_dynamic_energy + curr_reg_write_dynamic_energy;
+
+  #ifdef DEBUG
+      stats << curr_reg_reads << "," << curr_reg_writes << ",";
+
+      for (auto it = mem_partition_names.begin(); it != mem_partition_names.end();
+           ++it) {
+        const std::string& array_name = *it;
+        const PartitionEntry &entry = user_params.getArrayConfig(array_name);
+        int mem_bytes_read = mem_activity.at(array_name).at(curr_level).bytes_read;
+        int mem_bytes_written = mem_activity.at(array_name).at(curr_level).bytes_write;
+        int mem_words_read = ceil(((float)mem_bytes_read) / entry.wordsize);
+        int mem_words_written = ceil(((float)mem_bytes_written) / entry.wordsize);
+        stats << mem_words_read << "," << mem_words_written << ",";
+      }
+      stats << std::endl;
+      power_stats << (curr_reg_read_dynamic_energy / cycleTime) +
+                         (reg_leakage_power / 2)
+                  << ","
+                  << (curr_reg_write_dynamic_energy / cycleTime) +
+                         (reg_leakage_power / 2)
+                  << ",";
+      power_stats << std::endl;
+  #endif
+      if (is_fu_idle)
+        idle_fu_cycles++;
+    }
+  #ifdef DEBUG
+    stats.close();
+    power_stats.close();
+  #endif
+
+    float avg_mem_power = 0, avg_mem_dynamic_power = 0, mem_leakage_power = 0;
+
+    getAverageMemPower(
+        num_cycles, &avg_mem_power, &avg_mem_dynamic_power, &mem_leakage_power);
+
+    float avg_fu_dynamic_power = fu_dynamic_energy / (cycleTime * num_cycles);
+    float avg_fu_power = avg_fu_dynamic_power + fu_leakage_power;
+    float avg_power = avg_fu_power + avg_mem_power;
+
+    float mem_area = getTotalMemArea();
+    float fu_area =
+        registers.getTotalArea() + add_area * max_add + cmp_area * max_cmp +
+        gep_area * max_gep + mul_area * max_mul +
+        reg_area_per_bit * 32 * max_reg + bit_area * max_bit +
+        shifter_area * max_shifter + fp_sp_mul_area * max_fp_sp_mul +
+        fp_dp_mul_area * max_fp_dp_mul + fp_sp_add_area * max_fp_sp_add +
+        fp_dp_add_area * max_fp_dp_add + trig_area * max_trig;
+    float total_area = mem_area + fu_area;
+
+    // Summary output.    
+    summary.benchName = benchName;
+    summary.topLevelFunctionName = topLevelFunctionName;
+    summary.num_cycles = num_cycles;
+    summary.idle_fu_cycles = idle_fu_cycles;
+    summary.avg_power = avg_power;
+    summary.avg_fu_power = avg_fu_power;
+    summary.avg_fu_dynamic_power = avg_fu_dynamic_power;
+    summary.fu_leakage_power = fu_leakage_power;
+    summary.avg_mem_power = avg_mem_power;
+    summary.avg_mem_dynamic_power = avg_mem_dynamic_power;
+    summary.mem_leakage_power = mem_leakage_power;
+    summary.total_area = total_area;
+    summary.fu_area = fu_area;
+    summary.mem_area = mem_area;
+    summary.max_mul = max_mul;
+    summary.max_add = max_add;
+    summary.max_cmp = max_cmp;
+    summary.max_gep = max_gep;
+    summary.max_bit = max_bit;
+    summary.max_shifter = max_shifter;
+    summary.max_reg = max_reg;
+    summary.max_fp_sp_mul = max_fp_sp_mul;
+    summary.max_fp_dp_mul = max_fp_dp_mul;
+    summary.max_fp_sp_add = max_fp_sp_add;
+    summary.max_fp_dp_add = max_fp_dp_add;
+    summary.max_trig = max_trig;      
+  } else {
+    float add_leakage_power = add_leak_power * tot_add;
+    float cmp_leakage_power = cmp_leak_power * tot_cmp;
+    float gep_leakage_power = gep_leak_power * tot_gep;
+    float mul_leakage_power = mul_leak_power * tot_mul;
+    float bit_leakage_power = bit_leak_power * tot_bit;
+    float shifter_leakage_power = shifter_leak_power * tot_shifter;
+    // Total leakage power is the sum of leakage from the explicitly named
+    // registers (completely partitioned registers) and the inferred flops from
+    // the functional units.
+    float fu_flop_leakage_power = reg_leak_power_per_bit * 32 * tot_reg;
+    float reg_leakage_power =
+        registers.getTotalLeakagePower() + fu_flop_leakage_power;
+    float fp_sp_mul_leakage_power = fp_sp_mul_leak_power * tot_fp_sp_mul;
+    float fp_dp_mul_leakage_power = fp_dp_mul_leak_power * tot_fp_dp_mul;
+    float fp_sp_add_leakage_power = fp_sp_add_leak_power * tot_fp_sp_add;
+    float fp_dp_add_leakage_power = fp_dp_add_leak_power * tot_fp_dp_add;
+    float trig_leakage_power = trig_leak_power * tot_trig;
+    float fu_leakage_power = mul_leakage_power + add_leakage_power + 
+                             cmp_leakage_power + gep_leakage_power +
+                             reg_leakage_power + bit_leakage_power +
+                             shifter_leakage_power + fp_sp_mul_leakage_power +
+                             fp_dp_mul_leakage_power + fp_sp_add_leakage_power +
+                             fp_dp_add_leakage_power + trig_leakage_power;
+    /*Finish calculating the number of FUs and leakage power*/
+
+    float fu_dynamic_energy = 0;
+
+    /*Start writing per cycle activity */
+    for (unsigned curr_level = 0; ((int)curr_level) < num_cycles; ++curr_level) {
+  #ifdef DEBUG
+      stats << curr_level << ",";
+      power_stats << curr_level << ",";
+  #endif
+      bool is_fu_idle = true;
+      // For FUs
+      for (auto it = functionNames.begin(); it != functionNames.end(); ++it) {
+        FunctionActivity& curr_activity = func_activity.at(*it).at(curr_level);
+        is_fu_idle &= curr_activity.is_idle();
+  #ifdef DEBUG
+        stats << curr_activity.fp_sp_mul << ","
+              << curr_activity.fp_dp_mul << ","
+              << curr_activity.fp_sp_add << ","
+              << curr_activity.fp_dp_add << ","
+              << curr_activity.mul << ","
+              << curr_activity.add << ","
+              << curr_activity.cmp << ","  
+              << curr_activity.bit << ","
+              << curr_activity.shifter << ","
+              << curr_activity.trig << ",";
+              << curr_activity.gep << ","
+  #endif
+        float curr_fp_sp_mul_dynamic_power =
+            (fp_sp_mul_switch_power + fp_sp_mul_int_power) *
+            curr_activity.fp_sp_mul;
+        float curr_fp_dp_mul_dynamic_power =
+            (fp_dp_mul_switch_power + fp_dp_mul_int_power) *
+            curr_activity.fp_dp_mul;
+        float curr_fp_sp_add_dynamic_power =
+            (fp_sp_add_switch_power + fp_sp_add_int_power) *
+            curr_activity.fp_sp_add;
+        float curr_fp_dp_add_dynamic_power =
+            (fp_dp_add_switch_power + fp_dp_add_int_power) *
+            curr_activity.fp_dp_add;
+        float curr_trig_dynamic_power =
+            (trig_switch_power + trig_int_power) *
+            curr_activity.trig;
+        float curr_gep_dynamic_power = 
+            (gep_switch_power + gep_int_power) *
+            curr_activity.gep;
+        float curr_mul_dynamic_power = (mul_switch_power + mul_int_power) *
+                                       curr_activity.mul;
+        float curr_add_dynamic_power = (add_switch_power + add_int_power) *
+                                       curr_activity.add;
+        float curr_cmp_dynamic_power = (cmp_switch_power + cmp_int_power) *
+                                       curr_activity.cmp;
+
+        float curr_bit_dynamic_power = (bit_switch_power + bit_int_power) *
+                                       curr_activity.bit;
+        float curr_shifter_dynamic_power =
+            (shifter_switch_power + shifter_int_power) *
+            curr_activity.shifter;
+        fu_dynamic_energy +=
+            (curr_fp_sp_mul_dynamic_power + curr_fp_dp_mul_dynamic_power +
+             curr_fp_sp_add_dynamic_power + curr_fp_dp_add_dynamic_power +
+             curr_trig_dynamic_power + curr_mul_dynamic_power +
+             curr_add_dynamic_power + curr_cmp_dynamic_power +
+             curr_gep_dynamic_power + curr_bit_dynamic_power +
+             curr_shifter_dynamic_power) *
+            cycleTime;
+  #ifdef DEBUG
+        power_stats << curr_fp_sp_mul_dynamic_power << ","
+                    << curr_fp_dp_mul_dynamic_power << ","
+                    << curr_fp_sp_add_dynamic_power << ","
+                    << curr_fp_dp_add_dynamic_power << ","
+                    << curr_mul_dynamic_power << ","
+                    << curr_add_dynamic_power << ","
+                    << curr_cmp_dynamic_power << ","
+                    << curr_gep_dynamic_power << ","
+                    << curr_bit_dynamic_power << ","
+                    << curr_shifter_dynamic_power << ","
+                    << curr_trig_dynamic_power << ",";
+  #endif
+      }
+      // These are inferred flops from functional unit activity. They are assumed
+      // to be 4-byte accesses.
+      int curr_reg_reads = regStats.at(curr_level).reads;
+      int curr_reg_writes = regStats.at(curr_level).writes;
+      float curr_reg_read_dynamic_energy =
+          (reg_int_power_per_bit + reg_switch_power_per_bit) * curr_reg_reads *
+          32 * cycleTime;
+      float curr_reg_write_dynamic_energy =
+          (reg_int_power_per_bit + reg_switch_power_per_bit) * curr_reg_writes *
+          32 * cycleTime;
+      for (auto it = comp_partition_names.begin();
+           it != comp_partition_names.end();
+           ++it) {
+        Register* reg = registers.getRegister(*it);
+        int reg_bytes_read = mem_activity.at(*it).at(curr_level).bytes_read;
+        int reg_bytes_written = mem_activity.at(*it).at(curr_level).bytes_write;
+        int reg_words_read = ceil(((float)reg_bytes_read)/reg->getWordSize());
+        int reg_words_written = ceil(((float)reg_bytes_written)/reg->getWordSize());
+        int reg_read_energy = registers.getReadEnergy(*it) * reg_words_read;
+        int reg_write_energy = registers.getReadEnergy(*it) * reg_words_written;
+
+        curr_reg_reads += reg_words_read;
+        curr_reg_writes += reg_words_written;
+        curr_reg_read_dynamic_energy += reg_read_energy;
+        curr_reg_write_dynamic_energy += reg_write_energy;
+      }
+      fu_dynamic_energy +=
+          curr_reg_read_dynamic_energy + curr_reg_write_dynamic_energy;
+
+  #ifdef DEBUG
+      stats << curr_reg_reads << "," << curr_reg_writes << ",";
+
+      for (auto it = mem_partition_names.begin(); it != mem_partition_names.end();
+           ++it) {
+        const std::string& array_name = *it;
+        const PartitionEntry &entry = user_params.getArrayConfig(array_name);
+        int mem_bytes_read = mem_activity.at(array_name).at(curr_level).bytes_read;
+        int mem_bytes_written = mem_activity.at(array_name).at(curr_level).bytes_write;
+        int mem_words_read = ceil(((float)mem_bytes_read) / entry.wordsize);
+        int mem_words_written = ceil(((float)mem_bytes_written) / entry.wordsize);
+        stats << mem_words_read << "," << mem_words_written << ",";
+      }
+      stats << std::endl;
+      power_stats << (curr_reg_read_dynamic_energy / cycleTime) +
+                         (reg_leakage_power / 2)
+                  << ","
+                  << (curr_reg_write_dynamic_energy / cycleTime) +
+                         (reg_leakage_power / 2)
+                  << ",";
+      power_stats << std::endl;
+  #endif
+      if (is_fu_idle)
+        idle_fu_cycles++;
+    }
+  #ifdef DEBUG
+    stats.close();
+    power_stats.close();
+  #endif
+
+    float avg_mem_power = 0, avg_mem_dynamic_power = 0, mem_leakage_power = 0;
+
+    getAverageMemPower(
+        num_cycles, &avg_mem_power, &avg_mem_dynamic_power, &mem_leakage_power);
+
+    float avg_fu_dynamic_power = fu_dynamic_energy / (cycleTime * num_cycles);
+    float avg_fu_power = avg_fu_dynamic_power + fu_leakage_power;
+    float avg_power = avg_fu_power + avg_mem_power;
+
+    float mem_area = getTotalMemArea();
+    float fu_area =
+        registers.getTotalArea() + add_area * tot_add + cmp_area * tot_cmp +
+        gep_area * tot_gep + mul_area * tot_mul +
+        reg_area_per_bit * 32 * tot_reg + bit_area * tot_bit +
+        shifter_area * tot_shifter + fp_sp_mul_area * tot_fp_sp_mul +
+        fp_dp_mul_area * tot_fp_dp_mul + fp_sp_add_area * tot_fp_sp_add +
+        fp_dp_add_area * tot_fp_dp_add + trig_area * tot_trig;
+    float total_area = mem_area + fu_area;
+
+    // Summary output.    
+    summary.benchName = benchName;
+    summary.topLevelFunctionName = topLevelFunctionName;
+    summary.num_cycles = num_cycles;
+    summary.idle_fu_cycles = idle_fu_cycles;
+    summary.avg_power = avg_power;
+    summary.avg_fu_power = avg_fu_power;
+    summary.avg_fu_dynamic_power = avg_fu_dynamic_power;
+    summary.fu_leakage_power = fu_leakage_power;
+    summary.avg_mem_power = avg_mem_power;
+    summary.avg_mem_dynamic_power = avg_mem_dynamic_power;
+    summary.mem_leakage_power = mem_leakage_power;
+    summary.total_area = total_area;
+    summary.fu_area = fu_area;
+    summary.mem_area = mem_area;
+    summary.max_mul = tot_mul;
+    summary.max_add = tot_add;
+    summary.max_cmp = tot_cmp;
+    summary.max_gep = tot_gep;
+    summary.max_bit = tot_bit;
+    summary.max_shifter = tot_shifter;
+    summary.max_reg = tot_reg;
+    summary.max_fp_sp_mul = tot_fp_sp_mul;
+    summary.max_fp_dp_mul = tot_fp_dp_mul;
+    summary.max_fp_sp_add = tot_fp_sp_add;
+    summary.max_fp_dp_add = tot_fp_dp_add;
+    summary.max_trig = tot_trig;   
+  }
 
   writeSummary(std::cout, summary);
   std::ofstream summary_file;
@@ -1202,6 +1486,8 @@ void BaseDatapath::parse_config(std::string& bench,
       user_params.cycle_time = stof(rest_line);
     } else if (!type.compare("ready_mode")) {
       user_params.ready_mode = atoi(rest_line.c_str());
+    } else if (!type.compare("fu_reuse")) {
+      user_params.fu_reuse = atoi(rest_line.c_str());
     } else if (!type.compare("scratchpad_ports")) {
       user_params.scratchpad_ports = atoi(rest_line.c_str());
     } else {

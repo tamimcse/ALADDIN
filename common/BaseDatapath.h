@@ -332,17 +332,20 @@ class BaseDatapath {
       cycle_activity_map<MemoryActivity>& mem_activity,
       cycle_activity_map<FunctionActivity>& func_activity,
       std::unordered_map<std::string, FunctionActivity>& func_max_activity,
+      std::unordered_map<std::string, FunctionActivity>& func_total_activity,
       int num_cycles);
   void updatePerCycleActivity(
       cycle_activity_map<MemoryActivity>& mem_activity,
       cycle_activity_map<FunctionActivity>& func_activity,
-      std::unordered_map<std::string, FunctionActivity>& func_max_activity);
+      std::unordered_map<std::string, FunctionActivity>& func_max_activity,
+      std::unordered_map<std::string, FunctionActivity>& func_total_activity);
   void outputPerCycleActivity(
       std::vector<std::string>& comp_partition_names,
       std::vector<std::string>& mem_partition_names,
       cycle_activity_map<MemoryActivity>& mem_activity,
       cycle_activity_map<FunctionActivity>& func_activity,
-      std::unordered_map<std::string, FunctionActivity>& func_max_activity);
+      std::unordered_map<std::string, FunctionActivity>& func_max_activity,
+      std::unordered_map<std::string, FunctionActivity>& func_total_activity);
   void writeSummary(std::ostream& outfile, summary_data_t& summary);
 
 #ifdef USE_DB

@@ -31,7 +31,7 @@ struct PartitionEntry {
 class UserConfigParams {
  public:
   UserConfigParams()
-      : cycle_time(1), ready_mode(false), scratchpad_ports(1),
+      : cycle_time(1), fu_reuse(true), ready_mode(false), scratchpad_ports(1),
         global_pipelining(false) {}
 
   partition_config_t::const_iterator getArrayConfig(Addr addr) const {
@@ -153,6 +153,7 @@ class UserConfigParams {
   pipeline_config_t pipeline;
   partition_config_t partition;
 
+  bool fu_reuse;
   float cycle_time;
   bool ready_mode;
   /*Number of port in each scratchpad partition. It indicates how many
