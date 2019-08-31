@@ -4,23 +4,23 @@
 Running : sail
 Top level function: fib_lookup
 Cycle : 48 cycles
-Avg Power: 2461.47 mW
+Avg Power: 2462.48 mW
 Idle FU Cycles: 13 cycles
-Avg FU Power: 7.88199 mW
+Avg FU Power: 8.89742 mW
 Avg FU Dynamic Power: 7.68412 mW
-Avg FU leakage Power: 0.197862 mW
+Avg FU leakage Power: 1.21329 mW
 Avg MEM Power: 2453.58 mW
 Avg MEM Dynamic Power: 9.63698 mW
 Avg MEM Leakage Power: 2443.95 mW
-Total Area: 1.57244e+08 uM^2
-FU Area: 17105.6 uM^2
+Total Area: 1.5733e+08 uM^2
+FU Area: 103174 uM^2
 MEM Area: 1.57227e+08 uM^2
-Num of Adders (32-bit): 1
-Num of Integer Comperators (32-bit): 5
-Num of GetElemPtr (32-bit): 2
-Num of Bit-wise Operators (32-bit): 2
-Num of Shifters (32-bit): 2
-Num of Registers (32-bit): 8
+Num of Adders (32-bit): 6
+Num of Integer Comperators (32-bit): 12
+Num of GetElemPtr (32-bit): 13
+Num of Bit-wise Operators (32-bit): 18
+Num of Shifters (32-bit): 12
+Num of Registers (32-bit): 42
 ===============================
         Aladdin Results        
 ===============================
