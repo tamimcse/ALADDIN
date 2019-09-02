@@ -1,8 +1,5 @@
 #include "sail.h"
 
-/*Currently Aladdin messes things up if there are more than one return statements. So write the function in a way that it return only once.
-Currently Aladdin messes things up if return type is void.
-*/
 uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint16_t *C24, uint8_t *N32, uint16_t *C32, uint8_t *N40, uint16_t *C40, uint8_t *N48, uint16_t *C48,
 		uint8_t *N56, uint16_t *C56, uint8_t *N64, uint64_t ip){
     uint16_t nix;
