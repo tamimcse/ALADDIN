@@ -344,6 +344,10 @@ void BaseDatapath::updatePerCycleActivity(
       curr_fu_activity.add += 1;
     } else if (node->is_int_cmp_op()) {
       curr_fu_activity.cmp += 1;
+    } else if (node->is_select_op()) {
+      curr_fu_activity.select += 1;
+    } else if (node->is_intrinsic_op()) {
+      curr_fu_activity.intrinsic += 1;
     } else if (node->is_shifter_op()) {
       curr_fu_activity.shifter += 1;
     } else if (node->is_bit_op()) {
@@ -420,6 +424,18 @@ void BaseDatapath::updatePerCycleActivity(
                          [](const FunctionActivity& a, const FunctionActivity& b) {
                            return (a.cmp < b.cmp);
                          })->cmp;
+    max_it->second.select =
+        std::max_element(cycle_activity.begin(),
+                         cycle_activity.end(),
+                         [](const FunctionActivity& a, const FunctionActivity& b) {
+                           return (a.select < b.select);
+                         })->select;
+    max_it->second.intrinsic =
+        std::max_element(cycle_activity.begin(),
+                         cycle_activity.end(),
+                         [](const FunctionActivity& a, const FunctionActivity& b) {
+                           return (a.intrinsic < b.intrinsic);
+                         })->intrinsic;
     max_it->second.bit =
         std::max_element(cycle_activity.begin(),
                          cycle_activity.end(),
@@ -467,6 +483,10 @@ void BaseDatapath::updatePerCycleActivity(
       total_it->second.add += 1;
     } else if (node->is_int_cmp_op()) {
       total_it->second.cmp += 1;
+    } else if (node->is_select_op()) {
+      total_it->second.select += 1;
+    } else if (node->is_intrinsic_op()) {
+      total_it->second.intrinsic += 1;
     } else if (node->is_shifter_op()) {
       total_it->second.shifter += 1;
     } else if (node->is_bit_op()) {
@@ -485,6 +505,8 @@ void BaseDatapath::outputPerCycleActivity(
   /*Set the constants*/
   float add_int_power, add_switch_power, add_leak_power, add_area;
   float cmp_int_power, cmp_switch_power, cmp_leak_power, cmp_area;
+  float select_int_power, select_switch_power, select_leak_power, select_area;
+  float intrinsic_int_power, intrinsic_switch_power, intrinsic_leak_power, intrinsic_area;
   float gep_int_power, gep_switch_power, gep_leak_power, gep_area;
   float mul_int_power, mul_switch_power, mul_leak_power, mul_area;
   float fp_sp_mul_int_power, fp_sp_mul_switch_power, fp_sp_mul_leak_power,
@@ -508,6 +530,10 @@ void BaseDatapath::outputPerCycleActivity(
       cycleTime, &add_int_power, &add_switch_power, &add_leak_power, &add_area);
   getCmpPowerArea(
       cycleTime, &cmp_int_power, &cmp_switch_power, &cmp_leak_power, &cmp_area);
+  getSelectPowerArea(
+      cycleTime, &select_int_power, &select_switch_power, &select_leak_power, &select_area);
+  getIntrinsicPowerArea(
+      cycleTime, &intrinsic_int_power, &intrinsic_switch_power, &intrinsic_leak_power, &intrinsic_area);
   getGEPPowerArea(
       cycleTime, &gep_int_power, &gep_switch_power, &gep_leak_power, &gep_area);
   getMultiplierPowerArea(
@@ -598,7 +624,8 @@ void BaseDatapath::outputPerCycleActivity(
       max_reg_write = regStats.at(level_id).writes;
   }
   int max_reg = max_reg_read + max_reg_write;
-  int max_add = 0, max_cmp = 0, max_gep = 0, max_mul = 0, max_bit = 0, max_shifter = 0;
+  int max_add = 0, max_cmp = 0, max_gep = 0, max_select = 0,
+          max_intrinsic = 0, max_mul = 0, max_bit = 0, max_shifter = 0;
   int max_fp_sp_mul = 0, max_fp_dp_mul = 0;
   int max_fp_sp_add = 0, max_fp_dp_add = 0;
   int max_trig = 0;
@@ -608,6 +635,8 @@ void BaseDatapath::outputPerCycleActivity(
     max_bit += max_it->second.bit;
     max_add += max_it->second.add;
     max_cmp += max_it->second.cmp;
+    max_select += max_it->second.select;
+    max_intrinsic += max_it->second.intrinsic;
     max_mul += max_it->second.mul;
     max_shifter += max_it->second.shifter;
     max_fp_sp_mul += max_it->second.fp_sp_mul;
@@ -624,7 +653,8 @@ void BaseDatapath::outputPerCycleActivity(
       tot_reg_write = regStats.at(level_id).writes;
   }
   int tot_reg = tot_reg_read + tot_reg_write;
-  int tot_add = 0, tot_cmp = 0, tot_gep = 0, tot_mul = 0, tot_bit = 0, tot_shifter = 0;
+  int tot_add = 0, tot_cmp = 0, tot_gep = 0, tot_select = 0, tot_intrinsic = 0,
+          tot_mul = 0, tot_bit = 0, tot_shifter = 0;
   int tot_fp_sp_mul = 0, tot_fp_dp_mul = 0;
   int tot_fp_sp_add = 0, tot_fp_dp_add = 0;
   int tot_trig = 0;
@@ -634,6 +664,8 @@ void BaseDatapath::outputPerCycleActivity(
     tot_bit += tot_it->second.bit;
     tot_add += tot_it->second.add;
     tot_cmp += tot_it->second.cmp;
+    tot_select += tot_it->second.select;
+    tot_intrinsic += tot_it->second.intrinsic;
     tot_mul += tot_it->second.mul;
     tot_shifter += tot_it->second.shifter;
     tot_fp_sp_mul += tot_it->second.fp_sp_mul;
@@ -648,6 +680,8 @@ void BaseDatapath::outputPerCycleActivity(
   if (user_params.fu_reuse) {
     float add_leakage_power = add_leak_power * max_add;
     float cmp_leakage_power = cmp_leak_power * max_cmp;
+    float select_leakage_power = select_leak_power * max_select;
+    float intrinsic_leakage_power = intrinsic_leak_power * max_intrinsic;
     float gep_leakage_power = gep_leak_power * max_gep;
     float mul_leakage_power = mul_leak_power * max_mul;
     float bit_leakage_power = bit_leak_power * max_bit;
@@ -665,6 +699,7 @@ void BaseDatapath::outputPerCycleActivity(
     float trig_leakage_power = trig_leak_power * max_trig;
     float fu_leakage_power = mul_leakage_power + add_leakage_power + 
                              cmp_leakage_power + gep_leakage_power +
+                             select_leakage_power + intrinsic_leakage_power +
                              reg_leakage_power + bit_leakage_power +
                              shifter_leakage_power + fp_sp_mul_leakage_power +
                              fp_dp_mul_leakage_power + fp_sp_add_leakage_power +
@@ -691,7 +726,9 @@ void BaseDatapath::outputPerCycleActivity(
               << curr_activity.fp_dp_add << ","
               << curr_activity.mul << ","
               << curr_activity.add << ","
-              << curr_activity.cmp << ","  
+              << curr_activity.cmp << ","
+              << curr_activity.select << ","
+              << curr_activity.intrinsic << ","
               << curr_activity.bit << ","
               << curr_activity.shifter << ","
               << curr_activity.trig << ",";
@@ -721,7 +758,10 @@ void BaseDatapath::outputPerCycleActivity(
                                        curr_activity.add;
         float curr_cmp_dynamic_power = (cmp_switch_power + cmp_int_power) *
                                        curr_activity.cmp;
-
+        float curr_select_dynamic_power = (select_switch_power + select_int_power) *
+                                       curr_activity.select;
+        float curr_intrinsic_dynamic_power = (intrinsic_switch_power + intrinsic_int_power) *
+                                       curr_activity.intrinsic;
         float curr_bit_dynamic_power = (bit_switch_power + bit_int_power) *
                                        curr_activity.bit;
         float curr_shifter_dynamic_power =
@@ -732,6 +772,7 @@ void BaseDatapath::outputPerCycleActivity(
              curr_fp_sp_add_dynamic_power + curr_fp_dp_add_dynamic_power +
              curr_trig_dynamic_power + curr_mul_dynamic_power +
              curr_add_dynamic_power + curr_cmp_dynamic_power +
+             curr_select_dynamic_power + curr_intrinsic_dynamic_power +   
              curr_gep_dynamic_power + curr_bit_dynamic_power +
              curr_shifter_dynamic_power) *
             cycleTime;
@@ -743,6 +784,8 @@ void BaseDatapath::outputPerCycleActivity(
                     << curr_mul_dynamic_power << ","
                     << curr_add_dynamic_power << ","
                     << curr_cmp_dynamic_power << ","
+                    << curr_select_dynamic_power << ","
+                    << curr_intrinsic_dynamic_power << ","
                     << curr_gep_dynamic_power << ","
                     << curr_bit_dynamic_power << ","
                     << curr_shifter_dynamic_power << ","
@@ -820,6 +863,7 @@ void BaseDatapath::outputPerCycleActivity(
     float mem_area = getTotalMemArea();
     float fu_area =
         registers.getTotalArea() + add_area * max_add + cmp_area * max_cmp +
+        select_area * max_select + intrinsic_area * max_intrinsic +
         gep_area * max_gep + mul_area * max_mul +
         reg_area_per_bit * 32 * max_reg + bit_area * max_bit +
         shifter_area * max_shifter + fp_sp_mul_area * max_fp_sp_mul +
@@ -845,6 +889,8 @@ void BaseDatapath::outputPerCycleActivity(
     summary.max_mul = max_mul;
     summary.max_add = max_add;
     summary.max_cmp = max_cmp;
+    summary.max_select = max_select;
+    summary.max_intrinsic = max_intrinsic;
     summary.max_gep = max_gep;
     summary.max_bit = max_bit;
     summary.max_shifter = max_shifter;
@@ -857,6 +903,8 @@ void BaseDatapath::outputPerCycleActivity(
   } else {
     float add_leakage_power = add_leak_power * tot_add;
     float cmp_leakage_power = cmp_leak_power * tot_cmp;
+    float select_leakage_power = select_leak_power * tot_select;
+    float intrinsic_leakage_power = intrinsic_leak_power * tot_intrinsic;
     float gep_leakage_power = gep_leak_power * tot_gep;
     float mul_leakage_power = mul_leak_power * tot_mul;
     float bit_leakage_power = bit_leak_power * tot_bit;
@@ -874,6 +922,7 @@ void BaseDatapath::outputPerCycleActivity(
     float trig_leakage_power = trig_leak_power * tot_trig;
     float fu_leakage_power = mul_leakage_power + add_leakage_power + 
                              cmp_leakage_power + gep_leakage_power +
+                             select_leakage_power + intrinsic_leakage_power +
                              reg_leakage_power + bit_leakage_power +
                              shifter_leakage_power + fp_sp_mul_leakage_power +
                              fp_dp_mul_leakage_power + fp_sp_add_leakage_power +
@@ -900,7 +949,9 @@ void BaseDatapath::outputPerCycleActivity(
               << curr_activity.fp_dp_add << ","
               << curr_activity.mul << ","
               << curr_activity.add << ","
-              << curr_activity.cmp << ","  
+              << curr_activity.cmp << ","
+              << curr_activity.select << ","
+              << curr_activity.intrinsic << ","
               << curr_activity.bit << ","
               << curr_activity.shifter << ","
               << curr_activity.trig << ",";
@@ -930,7 +981,10 @@ void BaseDatapath::outputPerCycleActivity(
                                        curr_activity.add;
         float curr_cmp_dynamic_power = (cmp_switch_power + cmp_int_power) *
                                        curr_activity.cmp;
-
+        float curr_select_dynamic_power = (select_switch_power + select_int_power) *
+                                       curr_activity.select;
+        float curr_intrinsic_dynamic_power = (intrinsic_switch_power + intrinsic_int_power) *
+                                       curr_activity.intrinsic;
         float curr_bit_dynamic_power = (bit_switch_power + bit_int_power) *
                                        curr_activity.bit;
         float curr_shifter_dynamic_power =
@@ -941,6 +995,7 @@ void BaseDatapath::outputPerCycleActivity(
              curr_fp_sp_add_dynamic_power + curr_fp_dp_add_dynamic_power +
              curr_trig_dynamic_power + curr_mul_dynamic_power +
              curr_add_dynamic_power + curr_cmp_dynamic_power +
+             curr_select_dynamic_power + curr_intrinsic_dynamic_power +
              curr_gep_dynamic_power + curr_bit_dynamic_power +
              curr_shifter_dynamic_power) *
             cycleTime;
@@ -952,6 +1007,8 @@ void BaseDatapath::outputPerCycleActivity(
                     << curr_mul_dynamic_power << ","
                     << curr_add_dynamic_power << ","
                     << curr_cmp_dynamic_power << ","
+                    << curr_select_dynamic_power << ","
+                    << curr_intrinsic_dynamic_power << ","
                     << curr_gep_dynamic_power << ","
                     << curr_bit_dynamic_power << ","
                     << curr_shifter_dynamic_power << ","
@@ -1029,6 +1086,7 @@ void BaseDatapath::outputPerCycleActivity(
     float mem_area = getTotalMemArea();
     float fu_area =
         registers.getTotalArea() + add_area * tot_add + cmp_area * tot_cmp +
+        select_area * tot_select + intrinsic_area * tot_intrinsic +
         gep_area * tot_gep + mul_area * tot_mul +
         reg_area_per_bit * 32 * tot_reg + bit_area * tot_bit +
         shifter_area * tot_shifter + fp_sp_mul_area * tot_fp_sp_mul +
@@ -1054,6 +1112,8 @@ void BaseDatapath::outputPerCycleActivity(
     summary.max_mul = tot_mul;
     summary.max_add = tot_add;
     summary.max_cmp = tot_cmp;
+    summary.max_select = tot_select;
+    summary.max_intrinsic = tot_intrinsic;
     summary.max_gep = tot_gep;
     summary.max_bit = tot_bit;
     summary.max_shifter = tot_shifter;
@@ -1121,6 +1181,10 @@ void BaseDatapath::writeSummary(std::ostream& outfile,
     outfile << "Num of Adders (32-bit): " << summary.max_add << std::endl;
   if (summary.max_cmp != 0)
     outfile << "Num of Integer Comperators (32-bit): " << summary.max_cmp << std::endl;
+  if (summary.max_select != 0)
+    outfile << "Num of Selects (32-bit): " << summary.max_select << std::endl;
+  if (summary.max_intrinsic != 0)
+    outfile << "Num of Intrinsics (32-bit): " << summary.max_intrinsic << std::endl;
   if (summary.max_gep != 0)
     outfile << "Num of GetElemPtr (32-bit): " << summary.max_gep << std::endl;
   if (summary.max_bit != 0)

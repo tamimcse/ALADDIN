@@ -266,6 +266,10 @@ class ExecNode {
   bool is_gep_op() const {
     return microop == LLVM_IR_GetElementPtr;
   }
+  
+  bool is_select_op() const {
+    return microop == LLVM_IR_Select;
+  }
 
   bool is_memory_op() const {
     if (microop == LLVM_IR_Load || microop == LLVM_IR_Store)
