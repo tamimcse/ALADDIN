@@ -189,56 +189,56 @@ void getSelectPowerArea(float cycle_time,
                        float* area) {
   switch ((int)cycle_time) {  // cycle_time in ns
     case 10:
-      *internal_power = ICMP_10ns_int_power;
-      *switch_power = ICMP_10ns_switch_power;
-      *leakage_power = ICMP_10ns_leakage_power;
-      *area = ICMP_10ns_area;
+      *internal_power = SELECT_10ns_int_power;
+      *switch_power = SELECT_10ns_switch_power;
+      *leakage_power = SELECT_10ns_leakage_power;
+      *area = SELECT_10ns_area;
       break;
     case 6:
-      *internal_power = ICMP_6ns_int_power;
-      *switch_power = ICMP_6ns_switch_power;
-      *leakage_power = ICMP_6ns_leakage_power;
-      *area = ICMP_6ns_area;
+      *internal_power = SELECT_6ns_int_power;
+      *switch_power = SELECT_6ns_switch_power;
+      *leakage_power = SELECT_6ns_leakage_power;
+      *area = SELECT_6ns_area;
       break;
     case 5:
-      *internal_power = ICMP_5ns_int_power;
-      *switch_power = ICMP_5ns_switch_power;
-      *leakage_power = ICMP_5ns_leakage_power;
-      *area = ICMP_5ns_area;
+      *internal_power = SELECT_5ns_int_power;
+      *switch_power = SELECT_5ns_switch_power;
+      *leakage_power = SELECT_5ns_leakage_power;
+      *area = SELECT_5ns_area;
       break;
     case 4:
-      *internal_power = ICMP_4ns_int_power;
-      *switch_power = ICMP_4ns_switch_power;
-      *leakage_power = ICMP_4ns_leakage_power;
-      *area = ICMP_4ns_area;
+      *internal_power = SELECT_4ns_int_power;
+      *switch_power = SELECT_4ns_switch_power;
+      *leakage_power = SELECT_4ns_leakage_power;
+      *area = SELECT_4ns_area;
       break;
     case 3:
-      *internal_power = ICMP_3ns_int_power;
-      *switch_power = ICMP_3ns_switch_power;
-      *leakage_power = ICMP_3ns_leakage_power;
-      *area = ICMP_3ns_area;
+      *internal_power = SELECT_3ns_int_power;
+      *switch_power = SELECT_3ns_switch_power;
+      *leakage_power = SELECT_3ns_leakage_power;
+      *area = SELECT_3ns_area;
       break;
     case 2:
-      *internal_power = ICMP_2ns_int_power;
-      *switch_power = ICMP_2ns_switch_power;
-      *leakage_power = ICMP_2ns_leakage_power;
-      *area = ICMP_2ns_area;
+      *internal_power = SELECT_2ns_int_power;
+      *switch_power = SELECT_2ns_switch_power;
+      *leakage_power = SELECT_2ns_leakage_power;
+      *area = SELECT_2ns_area;
       break;
     case 1:
-      *internal_power = ICMP_1ns_int_power;
-      *switch_power = ICMP_1ns_switch_power;
-      *leakage_power = ICMP_1ns_leakage_power;
-      *area = ICMP_1ns_area;
+      *internal_power = SELECT_1ns_int_power;
+      *switch_power = SELECT_1ns_switch_power;
+      *leakage_power = SELECT_1ns_leakage_power;
+      *area = SELECT_1ns_area;
       break;
     default:
       std::cerr << " Current power model supports accelerators running"
                 << " at 1, 2, 3, 4, 5, 6, and 10 ns. " << std::endl;
       std::cerr << " Cycle time: " << cycle_time << " is not supported yet."
                 << " Use 6ns power model instead." << std::endl;
-      *internal_power = ICMP_6ns_int_power;
-      *switch_power = ICMP_6ns_switch_power;
-      *leakage_power = ICMP_6ns_leakage_power;
-      *area = ICMP_6ns_area;
+      *internal_power = SELECT_6ns_int_power;
+      *switch_power = SELECT_6ns_switch_power;
+      *leakage_power = SELECT_6ns_leakage_power;
+      *area = SELECT_6ns_area;
       break;
   }
 }
