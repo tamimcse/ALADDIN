@@ -439,6 +439,8 @@ class ExecNode {
           return ADD_6ns_critical_path_delay;
         else if (is_int_cmp_op())
           return ICMP_6ns_critical_path_delay;
+        else if (is_select_op())
+          return SELECT_6ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_6ns_critical_path_delay;
         else if (is_shifter_op())
@@ -454,6 +456,8 @@ class ExecNode {
           return ADD_5ns_critical_path_delay;
         else if (is_int_cmp_op())
           return ICMP_5ns_critical_path_delay;
+        else if (is_select_op())
+          return SELECT_5ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_5ns_critical_path_delay;
         else if (is_shifter_op())
@@ -469,6 +473,8 @@ class ExecNode {
           return ADD_4ns_critical_path_delay;
         else if (is_int_cmp_op())
           return ICMP_4ns_critical_path_delay;
+        else if (is_select_op())
+          return SELECT_4ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_4ns_critical_path_delay;
         else if (is_shifter_op())
@@ -484,6 +490,8 @@ class ExecNode {
           return ADD_3ns_critical_path_delay;
         else if (is_int_cmp_op())
           return ICMP_3ns_critical_path_delay;
+        else if (is_select_op())
+          return SELECT_3ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_3ns_critical_path_delay;
         else if (is_shifter_op())
@@ -499,6 +507,8 @@ class ExecNode {
           return ADD_2ns_critical_path_delay;
         else if (is_int_cmp_op())
           return ICMP_2ns_critical_path_delay;
+        else if (is_select_op())
+          return SELECT_2ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_2ns_critical_path_delay;
         else if (is_shifter_op())
@@ -514,6 +524,8 @@ class ExecNode {
           return ADD_1ns_critical_path_delay;
         else if (is_int_cmp_op())
           return ICMP_1ns_critical_path_delay;
+        else if (is_select_op())
+          return SELECT_1ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_1ns_critical_path_delay;
         else if (is_shifter_op())
@@ -530,6 +542,8 @@ class ExecNode {
           return ADD_6ns_critical_path_delay;
         else if (is_int_cmp_op())
           return ICMP_6ns_critical_path_delay;
+        else if (is_select_op())
+          return SELECT_6ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_6ns_critical_path_delay;
         else if (is_shifter_op())
