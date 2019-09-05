@@ -244,7 +244,7 @@ void getSelectPowerArea(float cycle_time,
 }
 
 /*TODO: Currently we assume that POPCNT is the only intrinsic instruction*/
-void getIntrinsicPowerArea(float cycle_time,
+void getPopCntPowerArea(float cycle_time,
                        float* internal_power,
                        float* switch_power,
                        float* leakage_power,

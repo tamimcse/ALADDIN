@@ -71,6 +71,7 @@
 #define LLVM_IR_IndexAdd 100
 #define LLVM_IR_SilentStore 101
 #define LLVM_IR_SpecialMathOp 102
+#define LLVM_IR_POPCNT 105
 #define LLVM_IR_Intrinsic 104
 // clang-format on
 

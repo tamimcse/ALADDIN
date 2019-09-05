@@ -50,6 +50,7 @@ struct FunctionActivity {
   unsigned cmp;
   unsigned gep;
   unsigned select;
+  unsigned popcnt;
   unsigned intrinsic;
   unsigned bit;
   unsigned shifter;
@@ -64,6 +65,7 @@ struct FunctionActivity {
     cmp = 0;
     gep = 0;
     select = 0;
+    popcnt = 0;
     intrinsic = 0;
     bit = 0;
     shifter = 0;
@@ -76,7 +78,7 @@ struct FunctionActivity {
 
   bool is_idle() {
     return (mul == 0 && add == 0 && cmp == 0 && gep == 0 && select == 0 &&
-            intrinsic == 0 && bit == 0 && shifter == 0 &&
+            popcnt == 0 && intrinsic == 0 && bit == 0 && shifter == 0 &&
             fp_sp_mul == 0 && fp_dp_mul == 0 && fp_dp_add == 0 && trig == 0);
   }
 };
@@ -114,6 +116,7 @@ struct summary_data_t {
   int max_cmp;
   int max_gep;
   int max_select;
+  int max_popcnt;
   int max_intrinsic;
   int max_bit;
   int max_shifter;

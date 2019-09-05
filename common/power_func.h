@@ -825,7 +825,7 @@ void getSelectPowerArea(float cycle_time,
                        float* swich_power,
                        float* leakage_power,
                        float* area);
-void getIntrinsicPowerArea(float cycle_time,
+void getPopCntPowerArea(float cycle_time,
                        float* internal_power,
                        float* swich_power,
                        float* leakage_power,

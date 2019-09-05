@@ -262,6 +262,8 @@ class ExecNode {
   }
 
   bool is_intrinsic_op() const { return microop == LLVM_IR_Intrinsic; }
+  
+  bool is_popcnt_op() const { return microop == LLVM_IR_POPCNT; }
 
   bool is_gep_op() const {
     return microop == LLVM_IR_GetElementPtr;
@@ -441,6 +443,8 @@ class ExecNode {
           return ICMP_6ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_6ns_critical_path_delay;
+        else if (is_popcnt_op())
+          return POPCNT_6ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_6ns_critical_path_delay;
         else if (is_shifter_op())
@@ -458,6 +462,8 @@ class ExecNode {
           return ICMP_5ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_5ns_critical_path_delay;
+        else if (is_popcnt_op())
+          return POPCNT_5ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_5ns_critical_path_delay;
         else if (is_shifter_op())
@@ -475,6 +481,8 @@ class ExecNode {
           return ICMP_4ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_4ns_critical_path_delay;
+        else if (is_popcnt_op())
+          return POPCNT_4ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_4ns_critical_path_delay;
         else if (is_shifter_op())
@@ -492,6 +500,8 @@ class ExecNode {
           return ICMP_3ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_3ns_critical_path_delay;
+        else if (is_popcnt_op())
+          return POPCNT_3ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_3ns_critical_path_delay;
         else if (is_shifter_op())
@@ -509,6 +519,8 @@ class ExecNode {
           return ICMP_2ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_2ns_critical_path_delay;
+        else if (is_popcnt_op())
+          return POPCNT_2ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_2ns_critical_path_delay;
         else if (is_shifter_op())
@@ -526,6 +538,8 @@ class ExecNode {
           return ICMP_1ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_1ns_critical_path_delay;
+        else if (is_popcnt_op())
+          return POPCNT_1ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_1ns_critical_path_delay;
         else if (is_shifter_op())
@@ -544,6 +558,8 @@ class ExecNode {
           return ICMP_6ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_6ns_critical_path_delay;
+        else if (is_popcnt_op())
+          return POPCNT_6ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_6ns_critical_path_delay;
         else if (is_shifter_op())
@@ -723,6 +739,7 @@ class ExecNode {
       LLVM_IR_OPCODE_TO_NAME(IndexAdd);
       LLVM_IR_OPCODE_TO_NAME(SilentStore);
       LLVM_IR_OPCODE_TO_NAME(SpecialMathOp);
+      LLVM_IR_OPCODE_TO_NAME(POPCNT);
       LLVM_IR_OPCODE_TO_NAME(Intrinsic);
       default:
         return "";
