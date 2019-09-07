@@ -1,4 +1,4 @@
-SRCS=sail.c
+SRCS=br.c
 
 ACCEL_NAME = br
 TEST_BIN = $(ACCEL_NAME)
