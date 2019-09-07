@@ -1,0 +1,28 @@
+digraph G {
+0[label="0\n(ICmp)"];
+1[label="1\n(Br)"];
+2[label="2\n(And)"];
+3[label="3\n(ICmp)"];
+4[label="4\n(Br)"];
+5[label="5\n(And)"];
+6[label="6\n(ICmp)"];
+7[label="7\n(And)"];
+8[label="8\n(Select)"];
+9[label="9\n(Ret)"];
+8->9 ;
+6->8 ;
+7->8 ;
+0->1 ;
+5->8 ;
+5->6 ;
+2->3 ;
+3->4 ;
+0->9 ;
+1->9 ;
+2->9 ;
+3->9 ;
+4->9 ;
+5->9 ;
+6->9 ;
+7->9 ;
+}
