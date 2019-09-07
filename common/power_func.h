@@ -510,15 +510,24 @@
 #define SELECT_10ns_area                                 1.794430e+02
 #define SELECT_10ns_critical_path_delay                  1.75
 
-/*We don't know the hardware model of POPCNT. Currently we assume that
- it is same as interger compare which we need to change*/
+/* POPCNT Power/Area model obtained from:
+ * Ciccardi, Andrea et al. "Intelligent Scheduler for Heterogeneous System
+ * on Chip", Master's thesis, 2018 (https://indigo.uic.edu/handle/10027/23736).
+ * Here Synopsys DC (1 GHz) is used to calculate Power/Area for POPCNT.
+ * POPCNT depends on the number of input lines. If the number of input lines
+ * is N, the area/power can be calculated as:
+ * Area = 17.48 * N -  41.15 um^2
+ * Leakage power = (0.101 * N + 0.0568)/1000 mW
+ * Switching power = 0.0085 * N - 0.1148 mW
+ * Internal power (Static Power)  = .0118 * N - 0.1379 mW
+ * Dynamic power = Switching power + Internal power
+ */
 
-#define POPCNT64_1ns_int_power                             5.523790e-02
-#define POPCNT64_1ns_switch_power                          1.551852e-01
-#define POPCNT64_1ns_dynamic_power                         2.104162e-01
-#define POPCNT64_1ns_dynamic_energy                        2.104162e-01
-#define POPCNT64_1ns_leakage_power                         2.249908e-03
-#define POPCNT64_1ns_area                                  2.779792e+02
+#define POPCNT64_1ns_int_power                             61.73e-02
+#define POPCNT64_1ns_switch_power                          4.292e-01
+#define POPCNT64_1ns_dynamic_power                         1.0465
+#define POPCNT64_1ns_leakage_power                         6.5208e-03
+#define POPCNT64_1ns_area                                  10.7757e+02
 #define POPCNT64_1ns_critical_path_delay                   0.98
 
 
