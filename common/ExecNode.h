@@ -443,8 +443,11 @@ class ExecNode {
           return ICMP_6ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_6ns_critical_path_delay;
-        else if (is_popcnt_op())
-          return POPCNT_6ns_critical_path_delay;
+        else if (is_popcnt_op()) {
+            std::cout << "POPCNT doesn't support" << cycle_time
+                    << " ns cycle_time\n"; 
+            return 1;
+        }
         else if (is_gep_op())
           return GEP_6ns_critical_path_delay;
         else if (is_shifter_op())
@@ -462,8 +465,11 @@ class ExecNode {
           return ICMP_5ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_5ns_critical_path_delay;
-        else if (is_popcnt_op())
-          return POPCNT_5ns_critical_path_delay;
+        else if (is_popcnt_op()) {
+            std::cout << "POPCNT doesn't support" << cycle_time
+                    << " ns cycle_time\n"; 
+            return 1;
+        }
         else if (is_gep_op())
           return GEP_5ns_critical_path_delay;
         else if (is_shifter_op())
@@ -481,8 +487,11 @@ class ExecNode {
           return ICMP_4ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_4ns_critical_path_delay;
-        else if (is_popcnt_op())
-          return POPCNT_4ns_critical_path_delay;
+        else if (is_popcnt_op()) {
+            std::cout << "POPCNT doesn't support" << cycle_time
+                    << " ns cycle_time\n"; 
+            return 1;
+        }
         else if (is_gep_op())
           return GEP_4ns_critical_path_delay;
         else if (is_shifter_op())
@@ -500,8 +509,11 @@ class ExecNode {
           return ICMP_3ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_3ns_critical_path_delay;
-        else if (is_popcnt_op())
-          return POPCNT_3ns_critical_path_delay;
+        else if (is_popcnt_op()) {
+            std::cout << "POPCNT doesn't support" << cycle_time
+                    << " ns cycle_time\n"; 
+            return 1;
+        }
         else if (is_gep_op())
           return GEP_3ns_critical_path_delay;
         else if (is_shifter_op())
@@ -519,8 +531,11 @@ class ExecNode {
           return ICMP_2ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_2ns_critical_path_delay;
-        else if (is_popcnt_op())
-          return POPCNT_2ns_critical_path_delay;
+        else if (is_popcnt_op()) {
+            std::cout << "POPCNT doesn't support" << cycle_time
+                    << " ns cycle_time\n"; 
+            return 1;
+        }
         else if (is_gep_op())
           return GEP_2ns_critical_path_delay;
         else if (is_shifter_op())
@@ -539,7 +554,7 @@ class ExecNode {
         else if (is_select_op())
           return SELECT_1ns_critical_path_delay;
         else if (is_popcnt_op())
-          return POPCNT_1ns_critical_path_delay;
+          return POPCNT64_1ns_critical_path_delay;
         else if (is_gep_op())
           return GEP_1ns_critical_path_delay;
         else if (is_shifter_op())
@@ -558,8 +573,11 @@ class ExecNode {
           return ICMP_6ns_critical_path_delay;
         else if (is_select_op())
           return SELECT_6ns_critical_path_delay;
-        else if (is_popcnt_op())
-          return POPCNT_6ns_critical_path_delay;
+        else if (is_popcnt_op()) {
+            std::cout << "POPCNT doesn't support" << cycle_time
+                    << " ns cycle_time\n"; 
+            return 1;
+        }
         else if (is_gep_op())
           return GEP_6ns_critical_path_delay;
         else if (is_shifter_op())
