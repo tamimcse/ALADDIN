@@ -3,14 +3,6 @@ partition,cyclic,C16,131072,2,2
 partition,cyclic,N24,4194304,1,2
 partition,cyclic,C24,8388608,2,2
 partition,cyclic,N32,4194304,1,2
-partition,cyclic,C32,8388608,2,2
-partition,cyclic,N40,4194304,1,2
-partition,cyclic,C40,8388608,2,2
-partition,cyclic,N48,4194304,1,2
-partition,cyclic,C48,8388608,2,2
-partition,cyclic,N56,4194304,1,2
-partition,cyclic,C56,8388608,2,2
-partition,cyclic,N64,4194304,1,2
 partition,complete,nh,1
 unrolling,br,br,2
 pipelining,1
