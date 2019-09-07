@@ -7,4 +7,4 @@
 #define NUM_CHUNKS 16384
 #define ARR_SIZE NUM_CHUNKS * 256
 
-uint8_t br(uint8_t *N16, uint16_t *C16, uint8_t *N24, uint64_t ip);
+int br(int a, int b, int c, int d);
