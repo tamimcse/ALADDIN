@@ -5,4 +5,3 @@ partition,complete,d,1
 unrolling,br,br,2
 pipelining,1
 cycle_time,1
-fu_reuse,0
