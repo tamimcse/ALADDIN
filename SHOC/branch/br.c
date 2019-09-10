@@ -7,7 +7,7 @@ int br(int a, int b, int c, int d){
 	out = a & c;
         if (out > d) {
 	  out = c & d;
-          if (out > a)
+          if (a > out)
 	    out = a & d;
         }
     }
