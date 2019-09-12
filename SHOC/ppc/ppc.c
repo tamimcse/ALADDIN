@@ -2,8 +2,9 @@
 
 #define POPCNT_LFT(X, N) (__builtin_popcount(((X) >> (63 - (N))) >> 1))
 
-/*Although multiple returns in a function are allowed by both Aladdin and HLS, they are in general a bad idea. (blue book)
-*/
+/* Although multiple returns in a function are allowed by both Aladdin and HLS, they are in general a bad idea (blue book). Rewrite the logic
+ * such that there is one return statement
+ */
 uint8_t fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32,
 	struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *C40, struct bitmap_pc *B48, uint8_t *N48, struct bitmap_pc *C48,
 	struct bitmap_pc *B64, uint8_t *N64, uint64_t key){
