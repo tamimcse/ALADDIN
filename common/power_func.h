@@ -443,55 +443,55 @@
 #define GEP_10ns_area                                 4.595000e+03 + 1.794430e+02
 #define GEP_10ns_critical_path_delay                  4.90 + 1.75
 
-/*Select (2-1 MUX) is implemented with 4 bitwise operations*/
+/*Select (2-1 MUX) is implemented with 4 bitwise operations (but delay is 3X as a bitwise operation)*/
 #define SELECT_1ns_int_power                             (4 * BIT_1ns_int_power)
 #define SELECT_1ns_switch_power                          (4 * BIT_1ns_switch_power)
 #define SELECT_1ns_dynamic_power                         (4 * BIT_1ns_dynamic_power)
 #define SELECT_1ns_leakage_power                         (4 * BIT_1ns_leakage_power)
 #define SELECT_1ns_area                                  (4 * BIT_1ns_area)
-#define SELECT_1ns_critical_path_delay                   (4 * BIT_1ns_critical_path_delay)
+#define SELECT_1ns_critical_path_delay                   (3 * BIT_1ns_critical_path_delay)
 
 #define SELECT_2ns_int_power                             (4 * BIT_2ns_int_power)
 #define SELECT_2ns_switch_power                          (4 * BIT_2ns_switch_power)
 #define SELECT_2ns_dynamic_power                         (4 * BIT_2ns_dynamic_power)
 #define SELECT_2ns_leakage_power                         (4 * BIT_2ns_leakage_power)
 #define SELECT_2ns_area                                  (4 * BIT_2ns_area)
-#define SELECT_2ns_critical_path_delay                   (4 * BIT_2ns_critical_path_delay)
+#define SELECT_2ns_critical_path_delay                   (3 * BIT_2ns_critical_path_delay)
 
 #define SELECT_3ns_int_power                             (4 * BIT_3ns_int_power)
 #define SELECT_3ns_switch_power                          (4 * BIT_3ns_switch_power)
 #define SELECT_3ns_dynamic_power                         (4 * BIT_3ns_dynamic_power)
 #define SELECT_3ns_leakage_power                         (4 * BIT_3ns_leakage_power)
 #define SELECT_3ns_area                                  (4 * BIT_3ns_area)
-#define SELECT_3ns_critical_path_delay                   (4 * BIT_3ns_critical_path_delay)
+#define SELECT_3ns_critical_path_delay                   (3 * BIT_3ns_critical_path_delay)
 
 #define SELECT_4ns_int_power                             (4 * BIT_4ns_int_power)
 #define SELECT_4ns_switch_power                          (4 * BIT_4ns_switch_power)
 #define SELECT_4ns_dynamic_power                         (4 * BIT_4ns_dynamic_power)
 #define SELECT_4ns_leakage_power                         (4 * BIT_4ns_leakage_power)
 #define SELECT_4ns_area                                  (4 * BIT_4ns_area)
-#define SELECT_4ns_critical_path_delay                   (4 * BIT_4ns_critical_path_delay)
+#define SELECT_4ns_critical_path_delay                   (3 * BIT_4ns_critical_path_delay)
 
 #define SELECT_5ns_int_power                             (4 * BIT_5ns_int_power)
 #define SELECT_5ns_switch_power                          (4 * BIT_5ns_switch_power)
 #define SELECT_5ns_dynamic_power                         (4 * BIT_5ns_dynamic_power)
 #define SELECT_5ns_leakage_power                         (4 * BIT_5ns_leakage_power)
 #define SELECT_5ns_area                                  (4 * BIT_5ns_area)
-#define SELECT_5ns_critical_path_delay                   (4 * BIT_5ns_critical_path_delay)
+#define SELECT_5ns_critical_path_delay                   (3 * BIT_5ns_critical_path_delay)
 
 #define SELECT_6ns_int_power                             (4 * BIT_6ns_int_power)
 #define SELECT_6ns_switch_power                          (4 * BIT_6ns_switch_power)
 #define SELECT_6ns_dynamic_power                         (4 * BIT_6ns_dynamic_power)
 #define SELECT_6ns_leakage_power                         (4 * BIT_6ns_leakage_power)
 #define SELECT_6ns_area                                  (4 * BIT_6ns_area)
-#define SELECT_6ns_critical_path_delay                   (4 * BIT_6ns_critical_path_delay)
+#define SELECT_6ns_critical_path_delay                   (3 * BIT_6ns_critical_path_delay)
 
 #define SELECT_10ns_int_power                            (4 * BIT_10ns_int_power)
 #define SELECT_10ns_switch_power                         (4 * BIT_10ns_switch_power)
 #define SELECT_10ns_dynamic_power                        (4 * BIT_10ns_dynamic_power)
 #define SELECT_10ns_leakage_power                        (4 * BIT_10ns_leakage_power)
 #define SELECT_10ns_area                                 (4 * BIT_10ns_area)
-#define SELECT_10ns_critical_path_delay                  (4 * BIT_10ns_critical_path_delay)
+#define SELECT_10ns_critical_path_delay                  (3 * BIT_10ns_critical_path_delay)
 
 /* POPCNT Power/Area model obtained from:
  * Ciccardi, Andrea et al. "Intelligent Scheduler for Heterogeneous System
