@@ -10,10 +10,12 @@ uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, uint8_t *
 		   struct bitmap_pc *B52, uint8_t *N52, struct bitmap_pc *B58, uint8_t *N58, struct bitmap_pc *B64, uint8_t *N64,   
 		   uint64_t key) {
 	uint32_t n_idx;
-	uint32_t off;
+	uint32_t v;
 	uint32_t idx;
 	uint32_t ck_idx;
 	uint8_t nh = DEF_NH;
+	uint64_t vector;
+	struct bitmap_pc *node;
 
 	idx = key >> 48;
 
@@ -21,8 +23,25 @@ uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, uint8_t *
 	  return N16[idx];
 
 	if (C16[idx]) {
-          off = ((key >> 42) & 63);
-	  idx = C16[idx] << 6;
+	  node = &B22[C16[idx]];
+	  vector = node->vec;
+          v = ((key >> 42) & 63);
+	  if (!vector & (1ULL << v)) {
+	    n_idx = node->base0 + __builtin_popcount(node->leafvec & ((2ULL << v) - 1));
+	    return N22[n_idx];
+	  } else {
+	    idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
+	    node = &B28[idx];
+       	    vector = node->vec;
+            v = ((key >> 36) & 63);
+	    if (!vector & (1ULL << v)) {
+	      n_idx = node->base0 + __builtin_popcount(node->leafvec & ((2ULL << v) - 1));
+	      return N28[n_idx];
+	    } else {
+	      idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
+	      node = &B34[idx];
+	    }
+	  } 
 	}
         
 
@@ -32,7 +51,8 @@ uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, uint8_t *
 void reset_ppc (struct bitmap_pc *ppc) {
 	ppc->vec = 0XFFFFFFFFFFFFFFFF;
 	ppc->leafvec = 0XFFFFFFFFFFFFFFFF;
-	ppc->popcnt = 5;
+	ppc->base0 = 5;
+	ppc->base1 = 5;
 }
 
 int main(){

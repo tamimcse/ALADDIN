@@ -46,7 +46,8 @@
 struct bitmap_pc {
     uint64_t vec;
     uint64_t leafvec;
-    uint16_t popcnt;
+    uint16_t base0;
+    uint16_t base1;
 };
 
 uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, uint8_t *N22, struct bitmap_pc *B28, uint8_t *N28,
