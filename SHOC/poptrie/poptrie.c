@@ -5,72 +5,27 @@
 /*Currently Aladdin messes things up if there are more than one return statements. So write the function in a way that it return only once.
 Currently Aladdin messes things up if return type is void.
 */
-uint8_t fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32,
-	struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *C40, struct bitmap_pc *B48, uint8_t *N48, struct bitmap_pc *C48,
-	struct bitmap_pc *B64, uint8_t *N64, uint64_t key){
-
+uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, uint8_t *N22, struct bitmap_pc *B28, uint8_t *N28,
+		   struct bitmap_pc *B34, uint8_t *N34, struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *B46, uint8_t *N46,
+		   struct bitmap_pc *B52, uint8_t *N52, struct bitmap_pc *B58, uint8_t *N58, struct bitmap_pc *B64, uint8_t *N64,   
+		   uint64_t key) {
 	uint32_t n_idx;
 	uint32_t off;
-	uint32_t idx, idx_sail;
+	uint32_t idx;
 	uint32_t ck_idx;
 	uint8_t nh = DEF_NH;
 
-	idx_sail = key >> 48;
-        idx = idx_sail >> 6;
-        off = idx_sail & 63;
+	idx = key >> 48;
 
-        if (B16[idx].vec & (MSK >> off)) {
-            n_idx = B16[idx].popcnt + __builtin_popcount((B16[idx].vec >> (63 - off)) >> 1);
-            nh = N16[n_idx];
-        }
+	if (N16[idx])
+	  return N16[idx];
 
-        if (C16[idx].vec & (MSK >> off)) {
-                ck_idx = C16[idx].popcnt + __builtin_popcount((C16[idx].vec >> (63 - off)) >> 1);
-                idx_sail = (ck_idx << 16) + ((key >> 32) & 0XFFFF);
-                idx = idx_sail >> 6;
-                off = idx_sail & 63;
+	if (C16[idx]) {
+          off = ((key >> 42) & 63);
+	  idx = C16[idx] << 6;
+	}
+        
 
-		if (B32[idx].vec & (MSK >> off)) {
-		    n_idx = B32[idx].popcnt + __builtin_popcount((B32[idx].vec >> (63 - off)) >> 1);
-		    nh = N32[n_idx];
-		}
-
-		if (C32[idx].vec & (MSK >> off)) {
-		        ck_idx = C32[idx].popcnt + __builtin_popcount((C32[idx].vec >> (63 - off)) >> 1);
-		        idx_sail = (ck_idx << 8) + ((key >> 24) & 0XFF);
-		        idx = idx_sail >> 6;
-		        off = idx_sail & 63;
-
-			if (B40[idx].vec & (MSK >> off)) {
-			    n_idx = B40[idx].popcnt + __builtin_popcount((B40[idx].vec >> (63 - off)) >> 1);
-			    nh = N40[n_idx];
-			}
-
-			if (C40[idx].vec & (MSK >> off)) {
-				ck_idx = C40[idx].popcnt + __builtin_popcount((C40[idx].vec >> (63 - off)) >> 1);
-				idx_sail = (ck_idx << 8) + ((key >> 16) & 0XFF);
-				idx = idx_sail >> 6;
-				off = idx_sail & 63;
-
-				if (B48[idx].vec & (MSK >> off)) {
-				    n_idx = B48[idx].popcnt + __builtin_popcount((B48[idx].vec >> (63 - off)) >> 1);
-				    nh = N48[n_idx];
-				}
-
-				if (C48[idx].vec & (MSK >> off)) {
-					ck_idx = C48[idx].popcnt + __builtin_popcount((C48[idx].vec >> (63 - off)) >> 1);
-					idx_sail = (ck_idx << 16) + (key & 0XFFFF);
-					idx = idx_sail >> 6;
-					off = idx_sail & 63;
-
-					if (B64[idx].vec & (MSK >> off)) {
-					    n_idx = B64[idx].popcnt + __builtin_popcount((B64[idx].vec >> (63 - off)) >> 1);
-					    nh = N64[n_idx];
-					}
-				}
-			}
-		}
-        }
 	return nh;
 }
 
@@ -82,69 +37,90 @@ void reset_ppc (struct bitmap_pc *ppc) {
 
 int main(){
 	uint8_t nh;
-	uint8_t *N16, *N32, *N40, *N48, *N64;
-	struct bitmap_pc *C16, *C32, *C40, *C48, *B16, *B32, *B40, *B48, *B64;
+	uint8_t *N16, *N22, *N28, *N34, *N40, *N46, *N52, *N58, *N64;
+	uint16_t *C16;
+	struct bitmap_pc *B22, *B28, *B34, *B40, *B46, *B52, *B58, *B64;
         
-    B16 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B16_SIZE);
+
     N16 = (uint8_t *) malloc (sizeof(uint8_t) * N16_SIZE);
-    C16 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B16_SIZE);
+    C16 = (uint16_t *) malloc (sizeof(uint16_t) * N16_SIZE);
 
-    B32 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N32 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
-    C32 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    B22 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    N22 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
+    B28 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    N28 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
+    B34 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    N34 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
+    B40 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    N40 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
+    B46 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    N46 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
+    B52 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    N52 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
+    B58 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    N58 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
+    B64 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    N64 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
 
-    B40 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
-    N40 = (uint8_t *) malloc (sizeof(uint8_t) * N40_N48_SIZE);
-    C40 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
 
-    B48 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
-    N48 = (uint8_t *) malloc (sizeof(uint8_t) * N40_N48_SIZE);
-    C48 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
-
-    B64 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B64_SIZE);
-    N64 = (uint8_t *) malloc (sizeof(uint8_t) * N64_SIZE);
 
 	int i;
   srand(time(NULL));
-	for(i=0; i<B16_SIZE; i++){
-		reset_ppc(&B16[i]);
-		reset_ppc(&C16[i]);
-	}
 
 	for(i=0; i<N16_SIZE; i++){
-		N16[i] = 1;
+		N16[i] = 0;
+		C16[i] = 1;
 	}
 
-	for(i=0; i<B32_SIZE; i++){
-		reset_ppc(&B32[i]);
-		reset_ppc(&C32[i]);	
-	}
+	for(i=0; i<B32_SIZE; i++)
+		reset_ppc(&B22[i]);
 
-	for(i=0; i<N32_SIZE; i++){
-		N32[i] = 1;
-	}
+	for(i=0; i<N32_SIZE; i++)
+		N22[i] = 1;
 
-	for(i=0; i<B40_B48_SIZE; i++){
+	for(i=0; i<B32_SIZE; i++)
+		reset_ppc(&B28[i]);
+
+	for(i=0; i<N32_SIZE; i++)
+		N28[i] = 1;
+
+	for(i=0; i<B32_SIZE; i++)
+		reset_ppc(&B34[i]);
+
+	for(i=0; i<N32_SIZE; i++)
+		N34[i] = 1;
+
+	for(i=0; i<B32_SIZE; i++)
 		reset_ppc(&B40[i]);
-		reset_ppc(&C40[i]);
-		reset_ppc(&B48[i]);
-		reset_ppc(&C48[i]);	
-	}
 
-	for(i=0; i<N40_N48_SIZE; i++){
+	for(i=0; i<N32_SIZE; i++)
 		N40[i] = 1;
-		N48[i] = 1;	
-	}
 
-	for(i=0; i<B64_SIZE; i++){
+	for(i=0; i<B32_SIZE; i++)
+		reset_ppc(&B46[i]);
+
+	for(i=0; i<N32_SIZE; i++)
+		N46[i] = 1;
+
+	for(i=0; i<B32_SIZE; i++)
+		reset_ppc(&B52[i]);
+
+	for(i=0; i<N32_SIZE; i++)
+		N52[i] = 1;
+
+	for(i=0; i<B32_SIZE; i++)
+		reset_ppc(&B58[i]);
+
+	for(i=0; i<N32_SIZE; i++)
+		N58[i] = 1;
+
+	for(i=0; i<B32_SIZE; i++)
 		reset_ppc(&B64[i]);
-	}
 
-	for(i=0; i<N64_SIZE; i++){
+	for(i=0; i<N32_SIZE; i++)
 		N64[i] = 1;
-	}
 
-	nh = fib_lookup(B16, N16, C16, B32, N32, C32, B40, N40, C40, B48, N48, C48, B64, N64, 67);
+	nh = fib_lookup(N16, C16, B22, N22, B28, N28, B34, N34, B40, N40, B46, N46, B52, N52, B58, N58, B64, N64, 67);
 
   FILE *output;
   output = fopen("output.data", "w");
