@@ -19,52 +19,52 @@ uint8_t fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, s
         idx = idx_sail >> 6;
         off = idx_sail & 63;
 
-        if (B16[idx].bitmap & (MSK >> off)) {
-            n_idx = B16[idx].popcnt + __builtin_popcount((B16[idx].bitmap >> (63 - off)) >> 1);
+        if (B16[idx].vec & (MSK >> off)) {
+            n_idx = B16[idx].popcnt + __builtin_popcount((B16[idx].vec >> (63 - off)) >> 1);
             nh = N16[n_idx];
         }
 
-        if (C16[idx].bitmap & (MSK >> off)) {
-                ck_idx = C16[idx].popcnt + __builtin_popcount((C16[idx].bitmap >> (63 - off)) >> 1);
+        if (C16[idx].vec & (MSK >> off)) {
+                ck_idx = C16[idx].popcnt + __builtin_popcount((C16[idx].vec >> (63 - off)) >> 1);
                 idx_sail = (ck_idx << 16) + ((key >> 32) & 0XFFFF);
                 idx = idx_sail >> 6;
                 off = idx_sail & 63;
 
-		if (B32[idx].bitmap & (MSK >> off)) {
-		    n_idx = B32[idx].popcnt + __builtin_popcount((B32[idx].bitmap >> (63 - off)) >> 1);
+		if (B32[idx].vec & (MSK >> off)) {
+		    n_idx = B32[idx].popcnt + __builtin_popcount((B32[idx].vec >> (63 - off)) >> 1);
 		    nh = N32[n_idx];
 		}
 
-		if (C32[idx].bitmap & (MSK >> off)) {
-		        ck_idx = C32[idx].popcnt + __builtin_popcount((C32[idx].bitmap >> (63 - off)) >> 1);
+		if (C32[idx].vec & (MSK >> off)) {
+		        ck_idx = C32[idx].popcnt + __builtin_popcount((C32[idx].vec >> (63 - off)) >> 1);
 		        idx_sail = (ck_idx << 8) + ((key >> 24) & 0XFF);
 		        idx = idx_sail >> 6;
 		        off = idx_sail & 63;
 
-			if (B40[idx].bitmap & (MSK >> off)) {
-			    n_idx = B40[idx].popcnt + __builtin_popcount((B40[idx].bitmap >> (63 - off)) >> 1);
+			if (B40[idx].vec & (MSK >> off)) {
+			    n_idx = B40[idx].popcnt + __builtin_popcount((B40[idx].vec >> (63 - off)) >> 1);
 			    nh = N40[n_idx];
 			}
 
-			if (C40[idx].bitmap & (MSK >> off)) {
-				ck_idx = C40[idx].popcnt + __builtin_popcount((C40[idx].bitmap >> (63 - off)) >> 1);
+			if (C40[idx].vec & (MSK >> off)) {
+				ck_idx = C40[idx].popcnt + __builtin_popcount((C40[idx].vec >> (63 - off)) >> 1);
 				idx_sail = (ck_idx << 8) + ((key >> 16) & 0XFF);
 				idx = idx_sail >> 6;
 				off = idx_sail & 63;
 
-				if (B48[idx].bitmap & (MSK >> off)) {
-				    n_idx = B48[idx].popcnt + __builtin_popcount((B48[idx].bitmap >> (63 - off)) >> 1);
+				if (B48[idx].vec & (MSK >> off)) {
+				    n_idx = B48[idx].popcnt + __builtin_popcount((B48[idx].vec >> (63 - off)) >> 1);
 				    nh = N48[n_idx];
 				}
 
-				if (C48[idx].bitmap & (MSK >> off)) {
-					ck_idx = C48[idx].popcnt + __builtin_popcount((C48[idx].bitmap >> (63 - off)) >> 1);
+				if (C48[idx].vec & (MSK >> off)) {
+					ck_idx = C48[idx].popcnt + __builtin_popcount((C48[idx].vec >> (63 - off)) >> 1);
 					idx_sail = (ck_idx << 16) + (key & 0XFFFF);
 					idx = idx_sail >> 6;
 					off = idx_sail & 63;
 
-					if (B64[idx].bitmap & (MSK >> off)) {
-					    n_idx = B64[idx].popcnt + __builtin_popcount((B64[idx].bitmap >> (63 - off)) >> 1);
+					if (B64[idx].vec & (MSK >> off)) {
+					    n_idx = B64[idx].popcnt + __builtin_popcount((B64[idx].vec >> (63 - off)) >> 1);
 					    nh = N64[n_idx];
 					}
 				}
@@ -75,7 +75,8 @@ uint8_t fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, s
 }
 
 void reset_ppc (struct bitmap_pc *ppc) {
-	ppc->bitmap = 0XFFFFFFFFFFFFFFFF;
+	ppc->vec = 0XFFFFFFFFFFFFFFFF;
+	ppc->leafvec = 0XFFFFFFFFFFFFFFFF;
 	ppc->popcnt = 5;
 }
 

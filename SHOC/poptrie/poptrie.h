@@ -44,7 +44,8 @@
 #define DEF_NH 1
 
 struct bitmap_pc {
-    uint64_t bitmap;
+    uint64_t vec;
+    uint64_t leafvec;
     uint16_t popcnt;
 };
 
