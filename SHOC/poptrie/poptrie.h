@@ -22,6 +22,7 @@
 #define N58_CNT 18750
 #define B64_CNT 1000
 #define N64_CNT 18750
+#define N_CNT 150000
 
 #define MSK 0X8000000000000000ULL
 
@@ -34,7 +35,7 @@ struct bitmap_pc {
     uint16_t base1;
 };
 
-uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, uint8_t *N22, struct bitmap_pc *B28, uint8_t *N28,
-		   struct bitmap_pc *B34, uint8_t *N34, struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *B46, uint8_t *N46,
-		   struct bitmap_pc *B52, uint8_t *N52, struct bitmap_pc *B58, uint8_t *N58, struct bitmap_pc *B64, uint8_t *N64,   
+uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, struct bitmap_pc *B28,
+		   struct bitmap_pc *B34, struct bitmap_pc *B40, struct bitmap_pc *B46,
+		   struct bitmap_pc *B52, struct bitmap_pc *B58, struct bitmap_pc *B64, uint8_t *N,   
 		   uint64_t key);

@@ -3,25 +3,25 @@
 ===============================
 Running : poptrie
 Top level function: fib_lookup
-Cycle : 20 cycles
-Avg Power: 73.9066 mW
-Idle FU Cycles: 4 cycles
-Avg FU Power: 6.39879 mW
-Avg FU Dynamic Power: 5.91717 mW
-Avg FU leakage Power: 0.481621 mW
-Avg MEM Power: 67.5078 mW
-Avg MEM Dynamic Power: 2.15797 mW
-Avg MEM Leakage Power: 65.3498 mW
-Total Area: 4.67305e+06 uM^2
-FU Area: 41604.3 uM^2
-MEM Area: 4.63144e+06 uM^2
-Num of Adders (32-bit): 1
+Cycle : 29 cycles
+Avg Power: 76.6563 mW
+Idle FU Cycles: 6 cycles
+Avg FU Power: 9.55906 mW
+Avg FU Dynamic Power: 8.72941 mW
+Avg FU leakage Power: 0.82965 mW
+Avg MEM Power: 67.0973 mW
+Avg MEM Dynamic Power: 2.00725 mW
+Avg MEM Leakage Power: 65.09 mW
+Total Area: 4.71595e+06 uM^2
+FU Area: 71225.6 uM^2
+MEM Area: 4.64473e+06 uM^2
+Num of Adders (32-bit): 2
 Num of Integer Comperators (32-bit): 6
-Num of POPCNT (64-bit): 1
-Num of GetElemPtr (32-bit): 5
-Num of Bit-wise Operators (32-bit): 5
-Num of Shifters (32-bit): 6
-Num of Registers (32-bit): 19
+Num of POPCNT (64-bit): 2
+Num of GetElemPtr (32-bit): 9
+Num of Bit-wise Operators (32-bit): 7
+Num of Shifters (32-bit): 8
+Num of Registers (32-bit): 25
 ===============================
         Aladdin Results        
 ===============================
