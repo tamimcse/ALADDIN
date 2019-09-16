@@ -4,35 +4,37 @@
 #include <time.h>
 #include <stdint.h>
 
-#define B16S 10240
+//Number of elements needed in each level (obtrained from data from ppc.sh)
+
+#define B16S 1024
 #define N16S 100
-#define C16S 10240
+#define C16S 1024
 
-#define B24S 600
+#define B24S 60
 #define N24S 400
-#define C24S 600
+#define C24S 60
 
-#define B32S 60000
+#define B32S 6000
 #define N32S 50000
-#define C32S 60000
+#define C32S 6000
 
 
-#define B40S 70000
+#define B40S 7000
 #define N40S 300000
-#define C40S 70000
+#define C40S 7000
 
-#define B48S 110000
+#define B48S 11000
 #define N48S 300000
-#define C48S 110000
+#define C48S 11000
 
-#define B56S 10000
+#define B56S 1000
 #define N56S 7000
-#define C56S 10000
+#define C56S 1000
 
-#define B56S 10000
+#define B56S 1000
 #define N56S 7000
 
-#define B64S 10000
+#define B64S 1000
 #define N64S 7000
 
 #define MSK 0X8000000000000000ULL

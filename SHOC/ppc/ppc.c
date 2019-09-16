@@ -109,48 +109,48 @@ int main(){
 	uint8_t *N16, *N24, *N32, *N40, *N48, *N56, *N64;
 	struct bitmap_pc *C16, *C24, *C32, *C40, *C48, *C56, *B16, *B24, *B32, *B40, *B48, *B56, *B64;
         
-    B16 = (struct bitmap_pc *) malloc (B16S);
-    N16 = (uint8_t *) malloc (N16S);
-    C16 = (struct bitmap_pc *) malloc (C16S);
+    B16 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * B16S);
+    N16 = (uint8_t *) malloc (sizeof(uint8_t) * N16S);
+    C16 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * C16S);
 
-    B24 = (struct bitmap_pc *) malloc (B24S);
-    N24 = (uint8_t *) malloc (N24S);
-    C24 = (struct bitmap_pc *) malloc (C24S);
+    B24 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * B24S);
+    N24 = (uint8_t *) malloc (sizeof(uint8_t) * N24S);
+    C24 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * C24S);
 
-    B32 = (struct bitmap_pc *) malloc (B32S);
-    N32 = (uint8_t *) malloc (N32S);
-    C32 = (struct bitmap_pc *) malloc (C32S);
+    B32 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * B32S);
+    N32 = (uint8_t *) malloc (sizeof(uint8_t) * N32S);
+    C32 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * C32S);
 
-    B40 = (struct bitmap_pc *) malloc (B40S);
-    N40 = (uint8_t *) malloc (N40S);
-    C40 = (struct bitmap_pc *) malloc (C40S);
+    B40 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * B40S);
+    N40 = (uint8_t *) malloc (sizeof(uint8_t) * N40S);
+    C40 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * C40S);
 
-    B48 = (struct bitmap_pc *) malloc (B48S);
-    N48 = (uint8_t *) malloc (N48S);
-    C48 = (struct bitmap_pc *) malloc (C48S);
+    B48 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * B48S);
+    N48 = (uint8_t *) malloc (sizeof(uint8_t) * N48S);
+    C48 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * C48S);
 
-    B56 = (struct bitmap_pc *) malloc (B56S);
-    N56 = (uint8_t *) malloc (N56S);
-    C56 = (struct bitmap_pc *) malloc (C56S);
+    B56 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * B56S);
+    N56 = (uint8_t *) malloc (sizeof(uint8_t) * N56S);
+    C56 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * C56S);
 
-    B64 = (struct bitmap_pc *) malloc (B64S);
-    N64 = (uint8_t *) malloc (N64S);
+    B64 = (struct bitmap_pc *) malloc (sizeof (struct bitmap_pc) * B64S);
+    N64 = (uint8_t *) malloc (sizeof(uint8_t) * N64S);
 
   srand(time(NULL));
 
-	for(int i = 0; i< (B16S/10); i++) reset_ppc(&B16[i]);
-	for(int i = 0; i< (C16S/10); i++) reset_ppc(&C16[i]);
-	for(int i = 0; i< (B24S/10); i++) reset_ppc(&B24[i]);
-	for(int i = 0; i< (C24S/10); i++) reset_ppc(&C24[i]);
-	for(int i = 0; i< (B32S/10); i++) reset_ppc(&B32[i]);
-	for(int i = 0; i< (C32S/10); i++) reset_ppc(&C32[i]);
-	for(int i = 0; i< (B40S/10); i++) reset_ppc(&B40[i]);
-	for(int i = 0; i< (C40S/10); i++) reset_ppc(&C40[i]);
-	for(int i = 0; i< (B48S/10); i++) reset_ppc(&B48[i]);
-//	for(int i = 0; i< (C48S/10); i++) reset_ppc(&C48[i]);
-	for(int i = 0; i< (B56S/10); i++) reset_ppc(&B56[i]);
-	for(int i = 0; i< (C56S/10); i++) reset_ppc(&C56[i]);
-	for(int i = 0; i< (B64S/10); i++) reset_ppc(&B64[i]);
+	for(int i = 0; i< B16S; i++) reset_ppc(&B16[i]);
+	for(int i = 0; i< C16S; i++) reset_ppc(&C16[i]);
+	for(int i = 0; i< B24S; i++) reset_ppc(&B24[i]);
+	for(int i = 0; i< C24S; i++) reset_ppc(&C24[i]);
+	for(int i = 0; i< B32S; i++) reset_ppc(&B32[i]);
+	for(int i = 0; i< C32S; i++) reset_ppc(&C32[i]);
+	for(int i = 0; i< B40S; i++) reset_ppc(&B40[i]);
+	for(int i = 0; i< C40S; i++) reset_ppc(&C40[i]);
+	for(int i = 0; i< B48S; i++) reset_ppc(&B48[i]);
+	for(int i = 0; i< C48S; i++) reset_ppc(&C48[i]);
+	for(int i = 0; i< B56S; i++) reset_ppc(&B56[i]);
+	for(int i = 0; i< C56S; i++) reset_ppc(&C56[i]);
+	for(int i = 0; i< B64S; i++) reset_ppc(&B64[i]);
 
 
 	for(int i = 0; i<N16S; i++) N16[i] = 1;
