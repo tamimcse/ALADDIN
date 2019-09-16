@@ -48,7 +48,7 @@ uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, uint8_t *
 	return nh;
 }
 
-void reset_ppc (struct bitmap_pc *ppc) {
+void reset_node (struct bitmap_pc *ppc) {
 	ppc->vec = 0XFFFFFFFFFFFFFFFF;
 	ppc->leafvec = 0XFFFFFFFFFFFFFFFF;
 	ppc->base0 = 5;
@@ -62,83 +62,52 @@ int main(){
 	struct bitmap_pc *B22, *B28, *B34, *B40, *B46, *B52, *B58, *B64;
         
 
-    N16 = (uint8_t *) malloc (sizeof(uint8_t) * N16_SIZE);
-    C16 = (uint16_t *) malloc (sizeof(uint16_t) * N16_SIZE);
+    N16 = (uint8_t *) malloc (sizeof(uint8_t) * N16_CNT);
+    C16 = (uint16_t *) malloc (sizeof(uint16_t) * C16_CNT);
 
-    B22 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N22 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
-    B28 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N28 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
-    B34 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N34 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
-    B40 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N40 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
-    B46 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N46 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
-    B52 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N52 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
-    B58 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N58 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
-    B64 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N64 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
+    B22 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B22_CNT);
+    N22 = (uint8_t *) malloc (sizeof(uint8_t) * N22_CNT);
+    B28 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B28_CNT);
+    N28 = (uint8_t *) malloc (sizeof(uint8_t) * N28_CNT);
+    B34 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B34_CNT);
+    N34 = (uint8_t *) malloc (sizeof(uint8_t) * N34_CNT);
+    B40 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_CNT);
+    N40 = (uint8_t *) malloc (sizeof(uint8_t) * N40_CNT);
+    B46 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B46_CNT);
+    N46 = (uint8_t *) malloc (sizeof(uint8_t) * N46_CNT);
+    B52 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B52_CNT);
+    N52 = (uint8_t *) malloc (sizeof(uint8_t) * N52_CNT);
+    B58 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B58_CNT);
+    N58 = (uint8_t *) malloc (sizeof(uint8_t) * N58_CNT);
+    B64 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B64_CNT);
+    N64 = (uint8_t *) malloc (sizeof(uint8_t) * N64_CNT);
 
 
 
 	int i;
   srand(time(NULL));
 
-	for(i=0; i<N16_SIZE; i++){
-		N16[i] = 0;
-		C16[i] = 1;
-	}
+	for(i=0; i<N16_CNT; i++) N16[i] = 0;
+	for(i=0; i<C16_CNT; i++) C16[i] = 1;
 
-	for(i=0; i<B32_SIZE; i++)
-		reset_ppc(&B22[i]);
 
-	for(i=0; i<N32_SIZE; i++)
-		N22[i] = 1;
+	for(i=0; i<B22_CNT; i++) reset_node(&B22[i]);
+	for(i=0; i<B28_CNT; i++) reset_node(&B28[i]);
+	for(i=0; i<B34_CNT; i++) reset_node(&B34[i]);
+	for(i=0; i<B40_CNT; i++) reset_node(&B40[i]);
+	for(i=0; i<B46_CNT; i++) reset_node(&B46[i]);
+	for(i=0; i<B52_CNT; i++) reset_node(&B52[i]);
+	for(i=0; i<B58_CNT; i++) reset_node(&B58[i]);
+	for(i=0; i<B64_CNT; i++) reset_node(&B64[i]);
 
-	for(i=0; i<B32_SIZE; i++)
-		reset_ppc(&B28[i]);
-
-	for(i=0; i<N32_SIZE; i++)
-		N28[i] = 1;
-
-	for(i=0; i<B32_SIZE; i++)
-		reset_ppc(&B34[i]);
-
-	for(i=0; i<N32_SIZE; i++)
-		N34[i] = 1;
-
-	for(i=0; i<B32_SIZE; i++)
-		reset_ppc(&B40[i]);
-
-	for(i=0; i<N32_SIZE; i++)
-		N40[i] = 1;
-
-	for(i=0; i<B32_SIZE; i++)
-		reset_ppc(&B46[i]);
-
-	for(i=0; i<N32_SIZE; i++)
-		N46[i] = 1;
-
-	for(i=0; i<B32_SIZE; i++)
-		reset_ppc(&B52[i]);
-
-	for(i=0; i<N32_SIZE; i++)
-		N52[i] = 1;
-
-	for(i=0; i<B32_SIZE; i++)
-		reset_ppc(&B58[i]);
-
-	for(i=0; i<N32_SIZE; i++)
-		N58[i] = 1;
-
-	for(i=0; i<B32_SIZE; i++)
-		reset_ppc(&B64[i]);
-
-	for(i=0; i<N32_SIZE; i++)
-		N64[i] = 1;
+	for(i=0; i<N22_CNT; i++) N22[i] = 1;
+	for(i=0; i<N28_CNT; i++) N28[i] = 1;
+	for(i=0; i<N34_CNT; i++) N34[i] = 1;
+	for(i=0; i<N40_CNT; i++) N40[i] = 1;
+	for(i=0; i<N46_CNT; i++) N46[i] = 1;
+	for(i=0; i<N52_CNT; i++) N52[i] = 1;
+	for(i=0; i<N58_CNT; i++) N58[i] = 1;
+	for(i=0; i<N64_CNT; i++) N64[i] = 1;
 
 	nh = fib_lookup(N16, C16, B22, N22, B28, N28, B34, N34, B40, N40, B46, N46, B52, N52, B58, N58, B64, N64, 67);
 
