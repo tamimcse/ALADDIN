@@ -138,19 +138,19 @@ int main(){
 
   srand(time(NULL));
 
-	for(int i = 0; i< (B16S/10); i++) reset_ppc(B16);
-	for(int i = 0; i< (C16S/10); i++) reset_ppc(C16);
-	for(int i = 0; i< (B24S/10); i++) reset_ppc(B24);
-	for(int i = 0; i< (C24S/10); i++) reset_ppc(C24);
-	for(int i = 0; i< (B32S/10); i++) reset_ppc(B32);
-	for(int i = 0; i< (C32S/10); i++) reset_ppc(C32);
-	for(int i = 0; i< (B40S/10); i++) reset_ppc(B40);
-	for(int i = 0; i< (C40S/10); i++) reset_ppc(C40);
-	for(int i = 0; i< (B48S/10); i++) reset_ppc(B48);
-	for(int i = 0; i< (C48S/10); i++) reset_ppc(C48);
-	for(int i = 0; i< (B56S/10); i++) reset_ppc(B56);
-	for(int i = 0; i< (C56S/10); i++) reset_ppc(C56);
-	for(int i = 0; i< (B64S/10); i++) reset_ppc(B64);
+	for(int i = 0; i< (B16S/10); i++) reset_ppc(&B16[i]);
+	for(int i = 0; i< (C16S/10); i++) reset_ppc(&C16[i]);
+	for(int i = 0; i< (B24S/10); i++) reset_ppc(&B24[i]);
+	for(int i = 0; i< (C24S/10); i++) reset_ppc(&C24[i]);
+	for(int i = 0; i< (B32S/10); i++) reset_ppc(&B32[i]);
+	for(int i = 0; i< (C32S/10); i++) reset_ppc(&C32[i]);
+	for(int i = 0; i< (B40S/10); i++) reset_ppc(&B40[i]);
+	for(int i = 0; i< (C40S/10); i++) reset_ppc(&C40[i]);
+	for(int i = 0; i< (B48S/10); i++) reset_ppc(&B48[i]);
+//	for(int i = 0; i< (C48S/10); i++) reset_ppc(&C48[i]);
+	for(int i = 0; i< (B56S/10); i++) reset_ppc(&B56[i]);
+	for(int i = 0; i< (C56S/10); i++) reset_ppc(&C56[i]);
+	for(int i = 0; i< (B64S/10); i++) reset_ppc(&B64[i]);
 
 
 	for(int i = 0; i<N16S; i++) N16[i] = 1;
