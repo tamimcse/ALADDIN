@@ -48,6 +48,7 @@ struct bitmap_pc {
     uint16_t popcnt;
 };
 
-uint8_t fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32,
-	struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *C40, struct bitmap_pc *B48, uint8_t *N48, struct bitmap_pc *C48,
-	struct bitmap_pc *B64, uint8_t *N64, uint64_t ip);
+uint8_t fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, struct bitmap_pc *B24, uint8_t *N24, struct bitmap_pc *C24,
+		   struct bitmap_pc *B32, uint8_t *N32, struct bitmap_pc *C32, struct bitmap_pc *B40, uint8_t *N40, struct bitmap_pc *C40,
+		   struct bitmap_pc *B48, uint8_t *N48, struct bitmap_pc *C48, struct bitmap_pc *B56, uint8_t *N56, struct bitmap_pc *C56,
+		   struct bitmap_pc *B64, uint8_t *N64, uint64_t key);

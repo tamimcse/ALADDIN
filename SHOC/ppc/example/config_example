@@ -1,6 +1,9 @@
 partition,cyclic,B16,10240,10,2
 partition,cyclic,N16,100,1,1
 partition,cyclic,C16,10240,10,2
+partition,cyclic,B24,655360,10,2
+partition,cyclic,N24,65536,1,2
+partition,cyclic,C24,655360,10,2
 partition,cyclic,B32,655360,10,2
 partition,cyclic,N32,65536,1,2
 partition,cyclic,C32,655360,10,2
@@ -10,6 +13,9 @@ partition,cyclic,C40,655360,10,2
 partition,cyclic,B48,655360,10,2
 partition,cyclic,N48,262144,1,2
 partition,cyclic,C48,655360,10,2
+partition,cyclic,B56,655360,10,2
+partition,cyclic,N56,65536,1,2
+partition,cyclic,C56,655360,10,2
 partition,cyclic,B64,256000,10,2
 partition,cyclic,N64,655360,1,2
 partition,complete,nh,1
