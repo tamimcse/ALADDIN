@@ -4,40 +4,36 @@
 #include <time.h>
 #include <stdint.h>
 
-#define B16_SIZE 1024
-#define N16_SIZE 100
+#define B16S 10240
+#define N16S 100
+#define C16S 10240
 
-/*Number of chunks in level 32*/
-#define NUM32 64
+#define B24S 600
+#define N24S 400
+#define C24S 600
 
-/*Number of chunks in level 40 and 48*/
-#define NUM40 16384
+#define B32S 60000
+#define N32S 50000
+#define C32S 60000
 
-/*Number of chunks in level 64*/
-#define NUM64 400
 
-/*As we group each 64 elements, each chunk in level 32 and level 64 
- * contains 1024 (65536/64) elements. On the other hand, chunks in level 40 and 
- * level 48 contain 4 (256/64) chunks */
-#define ELEMS_PER_CHUNK 1024
-#define ELEMS_PER_CHUNK_40 4
+#define B40S 70000
+#define N40S 300000
+#define C40S 70000
 
-/*The size of B32 and C32. Here each chunk consists of 64 groups*/
-#define B32_SIZE NUM32 * ELEMS_PER_CHUNK
+#define B48S 110000
+#define N48S 300000
+#define C48S 110000
 
-/*The size of N32/P32/N64/P64*/
-#define N32_SIZE 65536
+#define B56S 10000
+#define N56S 7000
+#define C56S 10000
 
-/*The size of N64/P64*/
-#define N64_SIZE 655360
+#define B56S 10000
+#define N56S 7000
 
-/*The size of C40 and C48. Here each chunk consists of 4 groups*/
-#define B40_B48_SIZE NUM40 * ELEMS_PER_CHUNK_40
-
-/*The size of N40/P40/N48/P48. We assume each chunk on average will have 16 elements*/
-#define N40_N48_SIZE NUM40 * 16
-
-#define B64_SIZE NUM64 * 64
+#define B64S 10000
+#define N64S 7000
 
 #define MSK 0X8000000000000000ULL
 

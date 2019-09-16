@@ -27,7 +27,7 @@ uint8_t fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, s
 
         if (C16[idx].bitmap & (MSK >> off)) {
                 ck_idx = C16[idx].popcnt + __builtin_popcount((C16[idx].bitmap >> (63 - off)) >> 1);
-                idx_sail = (ck_idx << 16) + ((key >> 40) & 0XFF);
+                idx_sail = (ck_idx << 8) + ((key >> 40) & 0XFF);
                 idx = idx_sail >> 6;
                 off = idx_sail & 63;
 
@@ -82,7 +82,7 @@ uint8_t fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, s
 
 						if (C56[idx].bitmap & (MSK >> off)) {
 							ck_idx = C56[idx].popcnt + __builtin_popcount((C56[idx].bitmap >> (63 - off)) >> 1);
-							idx_sail = (ck_idx << 16) + (key & 0XFF);
+							idx_sail = (ck_idx << 8) + (key & 0XFF);
 							idx = idx_sail >> 6;
 							off = idx_sail & 63;
 
@@ -92,7 +92,7 @@ uint8_t fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, s
 							}
 						}
 					}
-				}
+				} 
 			}
 		}
         }
@@ -100,8 +100,8 @@ uint8_t fib_lookup(struct bitmap_pc *B16, uint8_t *N16, struct bitmap_pc *C16, s
 }
 
 void reset_ppc (struct bitmap_pc *ppc) {
-	ppc->bitmap = 0XFFFFFFFFFFFFFFFF;
-	ppc->popcnt = 5;
+    ppc->bitmap = 0XFFFFFFFFFFFFFFFF;
+    ppc->popcnt = 5;
 }
 
 int main(){
@@ -109,84 +109,58 @@ int main(){
 	uint8_t *N16, *N24, *N32, *N40, *N48, *N56, *N64;
 	struct bitmap_pc *C16, *C24, *C32, *C40, *C48, *C56, *B16, *B24, *B32, *B40, *B48, *B56, *B64;
         
-    B16 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B16_SIZE);
-    N16 = (uint8_t *) malloc (sizeof(uint8_t) * N16_SIZE);
-    C16 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B16_SIZE);
+    B16 = (struct bitmap_pc *) malloc (B16S);
+    N16 = (uint8_t *) malloc (N16S);
+    C16 = (struct bitmap_pc *) malloc (C16S);
 
-    B24 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N24 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
-    C24 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    B24 = (struct bitmap_pc *) malloc (B24S);
+    N24 = (uint8_t *) malloc (N24S);
+    C24 = (struct bitmap_pc *) malloc (C24S);
 
-    B32 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N32 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
-    C32 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    B32 = (struct bitmap_pc *) malloc (B32S);
+    N32 = (uint8_t *) malloc (N32S);
+    C32 = (struct bitmap_pc *) malloc (C32S);
 
-    B40 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
-    N40 = (uint8_t *) malloc (sizeof(uint8_t) * N40_N48_SIZE);
-    C40 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
+    B40 = (struct bitmap_pc *) malloc (B40S);
+    N40 = (uint8_t *) malloc (N40S);
+    C40 = (struct bitmap_pc *) malloc (C40S);
 
-    B48 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
-    N48 = (uint8_t *) malloc (sizeof(uint8_t) * N40_N48_SIZE);
-    C48 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_B48_SIZE);
+    B48 = (struct bitmap_pc *) malloc (B48S);
+    N48 = (uint8_t *) malloc (N48S);
+    C48 = (struct bitmap_pc *) malloc (C48S);
 
-    B56 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
-    N56 = (uint8_t *) malloc (sizeof(uint8_t) * N32_SIZE);
-    C56 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B32_SIZE);
+    B56 = (struct bitmap_pc *) malloc (B56S);
+    N56 = (uint8_t *) malloc (N56S);
+    C56 = (struct bitmap_pc *) malloc (C56S);
 
-    B64 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B64_SIZE);
-    N64 = (uint8_t *) malloc (sizeof(uint8_t) * N64_SIZE);
+    B64 = (struct bitmap_pc *) malloc (B64S);
+    N64 = (uint8_t *) malloc (N64S);
 
-	int i;
   srand(time(NULL));
-	for(i=0; i<B16_SIZE; i++){
-		reset_ppc(&B16[i]);
-		reset_ppc(&C16[i]);
-	}
 
-	for(i=0; i<N16_SIZE; i++){
-		N16[i] = 1;
-	}
+	for(int i = 0; i< (B16S/10); i++) reset_ppc(B16);
+	for(int i = 0; i< (C16S/10); i++) reset_ppc(C16);
+	for(int i = 0; i< (B24S/10); i++) reset_ppc(B24);
+	for(int i = 0; i< (C24S/10); i++) reset_ppc(C24);
+	for(int i = 0; i< (B32S/10); i++) reset_ppc(B32);
+	for(int i = 0; i< (C32S/10); i++) reset_ppc(C32);
+	for(int i = 0; i< (B40S/10); i++) reset_ppc(B40);
+	for(int i = 0; i< (C40S/10); i++) reset_ppc(C40);
+	for(int i = 0; i< (B48S/10); i++) reset_ppc(B48);
+	for(int i = 0; i< (C48S/10); i++) reset_ppc(C48);
+	for(int i = 0; i< (B56S/10); i++) reset_ppc(B56);
+	for(int i = 0; i< (C56S/10); i++) reset_ppc(C56);
+	for(int i = 0; i< (B64S/10); i++) reset_ppc(B64);
 
-	for(i=0; i<B32_SIZE; i++){
-		reset_ppc(&B24[i]);
-		reset_ppc(&C24[i]);	
-		reset_ppc(&B32[i]);
-		reset_ppc(&C32[i]);	
-	}
 
-	for(i=0; i<N32_SIZE; i++){
-		N24[i] = 1;
-		N32[i] = 1;
-	}
+	for(int i = 0; i<N16S; i++) N16[i] = 1;
+	for(int i = 0; i<N24S; i++) N24[i] = 1;
+	for(int i = 0; i<N32S; i++) N32[i] = 1;
+	for(int i = 0; i<N40S; i++) N40[i] = 1;
+	for(int i = 0; i<N48S; i++) N48[i] = 1;
+	for(int i = 0; i<N56S; i++) N56[i] = 1;
+	for(int i = 0; i<N64S; i++) N64[i] = 1;
 
-	for(i=0; i<B40_B48_SIZE; i++){
-		reset_ppc(&B40[i]);
-		reset_ppc(&C40[i]);
-		reset_ppc(&B48[i]);
-		reset_ppc(&C48[i]);	
-	}
-
-	for(i=0; i<N40_N48_SIZE; i++){
-		N40[i] = 1;
-		N48[i] = 1;	
-	}
-
-	for(i=0; i<B32_SIZE; i++){
-		reset_ppc(&B56[i]);
-		reset_ppc(&C56[i]);	
-	}
-
-	for(i=0; i<N32_SIZE; i++){
-		N56[i] = 1;
-	}
-
-	for(i=0; i<B64_SIZE; i++){
-		reset_ppc(&B64[i]);
-	}
-
-	for(i=0; i<N64_SIZE; i++){
-		N64[i] = 1;
-	}
 
 	nh = fib_lookup(B16, N16, C16, B24, N24, C24, B32, N32, C32, B40, N40, C40, B48, N48, C48, B56, N56, C56, B64, N64, 67);
 
