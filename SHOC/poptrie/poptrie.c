@@ -34,6 +34,37 @@ uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, struct bi
 	    if (vector & (1ULL << v)) {
 	      idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
 	      node = &B34[idx];
+       	      vector = node->vec;
+              v = ((key >> 30) & 63);
+	      if (vector & (1ULL << v)) {
+	        idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
+	        node = &B40[idx];
+       	        vector = node->vec;
+                v = ((key >> 24) & 63);
+	        if (vector & (1ULL << v)) {
+	          idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
+	          node = &B46[idx];
+       	          vector = node->vec;
+                  v = ((key >> 18) & 63);
+	          if (vector & (1ULL << v)) {
+	            idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
+	            node = &B52[idx];
+      	 	    vector = node->vec;
+        	    v = ((key >> 12) & 63);
+		    if (vector & (1ULL << v)) {
+		      idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
+		      node = &B58[idx];
+       	    	      vector = node->vec;
+            	      v = ((key >> 6) & 63);
+		      if (vector & (1ULL << v)) {
+		        idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
+	      		node = &B64[idx];
+	    	      }
+		    }
+	          }
+
+	        }
+	      }
 	    }
 	  } 
 	}
