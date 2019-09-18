@@ -74,6 +74,13 @@ void LoopUnrolling::optimize() {
         continue;
       }
     }
+    
+    //Nested branch
+    if (prev_branch) {
+        if (node->is_branch_op()) {
+            prev_branch = node;
+        }
+    }
     assert(prev_branch != nullptr);
     // We should never add control edges to DMA nodes. They should be
     // constrained by memory dependences only.
@@ -184,9 +191,7 @@ void LoopUnrolling::optimize() {
       }
     }
   }
-  //Only do it for loop. Don't falsely do it for a branch
-  if (first)
-    loop_bounds.push_back(DynLoopBound(exec_nodes.size(), 0));
+  loop_bounds.push_back(DynLoopBound(exec_nodes.size(), 0));
 
   if (iter_counts == 0 && user_params.unrolling.size() != 0) {
     std::cerr << "-------------------------------\n"
