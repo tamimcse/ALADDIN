@@ -1,6 +1,6 @@
-#include "br.h"
+#include "if-else.h"
 
-int if-else(int a, int b, int c, int d){
+int br(int a, int b, int c, int d){
     int out;
 
     if (a > c) {
@@ -22,7 +22,7 @@ int main(){
   b = 2;
   c = 1;
   d = 0;
-  out = if-else(a, b, c, d);
+  out = br(a, b, c, d);
   FILE *output;
   output = fopen("output.data", "w");
   fprintf(output, "a = %d b = %d c = %d d = %d out = %d \n", a, b, c, d, out);

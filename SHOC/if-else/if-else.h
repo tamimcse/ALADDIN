@@ -7,4 +7,4 @@
 #define NUM_CHUNKS 16384
 #define ARR_SIZE NUM_CHUNKS * 256
 
-int if-else(int a, int b, int c, int d);
+int br(int a, int b, int c, int d);
