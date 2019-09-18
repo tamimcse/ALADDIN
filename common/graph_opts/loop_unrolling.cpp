@@ -75,9 +75,9 @@ void LoopUnrolling::optimize() {
       }
     }
     
-    //Nested branch
-    if (prev_branch) {
-        if (node->is_branch_op()) {
+    //Nested conditional branch
+    if (prev_branch) {        
+        if (node->is_branch_op() && boost::in_degree(node_vertex, graph) != 0) {
             prev_branch = node;
         }
     }
