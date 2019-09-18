@@ -3,11 +3,11 @@
 ===============================
 Running : br
 Top level function: br
-Cycle : 4 cycles
-Avg Power: 0.715754 mW
+Cycle : 5 cycles
+Avg Power: 0.69227 mW
 Idle FU Cycles: 1 cycles
-Avg FU Power: 0.715754 mW
-Avg FU Dynamic Power: 0.693388 mW
+Avg FU Power: 0.69227 mW
+Avg FU Dynamic Power: 0.669904 mW
 Avg FU leakage Power: 0.0223658 mW
 Avg MEM Power: 0 mW
 Avg MEM Dynamic Power: 0 mW

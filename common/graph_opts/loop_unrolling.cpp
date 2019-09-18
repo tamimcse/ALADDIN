@@ -67,10 +67,6 @@ void LoopUnrolling::optimize() {
     if (!first) {
       // prev_branch should not be anything but a branch node.
       if (node->is_branch_op()) {
-      auto unroll_it = getUnrollFactor(node);
-      //The branch is not a loop
-      if (unroll_it == user_params.unrolling.end() || unroll_it->second == 0)
-          continue;
         first = true;
         loop_bounds.push_back(dyn_bound);
         prev_branch = node;
@@ -198,7 +194,6 @@ void LoopUnrolling::optimize() {
               << "Either loop labels or line numbers are incorrect, or the\n"
               << "loop unrolling factor is larger than the loop trip count.\n"
               << "-------------------------------" << std::endl;
-    return;
   }
   updateGraphWithNewEdges(to_add_edges);
   updateGraphWithIsolatedNodes(to_remove_nodes);
