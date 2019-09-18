@@ -1,0 +1,7 @@
+partition,complete,a,1
+partition,complete,b,1
+partition,complete,c,1
+partition,complete,d,1
+unrolling,if-else,if-else,2
+pipelining,1
+cycle_time,1
