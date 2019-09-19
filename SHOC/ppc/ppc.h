@@ -10,31 +10,28 @@
 #define N16S 100
 #define C16S 1024
 
-#define B24S 60
+#define B24S 240
 #define N24S 400
-#define C24S 60
+#define C24S 240
 
-#define B32S 6000
+#define B32S 24000
 #define N32S 50000
-#define C32S 6000
+#define C32S 24000
 
 
-#define B40S 7000
+#define B40S 28000
 #define N40S 300000
-#define C40S 7000
+#define C40S 28000
 
-#define B48S 11000
+#define B48S 44000
 #define N48S 300000
-#define C48S 11000
+#define C48S 44000
 
-#define B56S 1000
+#define B56S 4000
 #define N56S 7000
-#define C56S 1000
+#define C56S 4000
 
-#define B56S 1000
-#define N56S 7000
-
-#define B64S 1000
+#define B64S 4000
 #define N64S 7000
 
 #define MSK 0X8000000000000000ULL
