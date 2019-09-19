@@ -3,21 +3,21 @@
 ===============================
 Running : br
 Top level function: br
-Cycle : 5 cycles
-Avg Power: 0.69227 mW
+Cycle : 7 cycles
+Avg Power: 0.498007 mW
 Idle FU Cycles: 1 cycles
-Avg FU Power: 0.69227 mW
-Avg FU Dynamic Power: 0.669904 mW
-Avg FU leakage Power: 0.0223658 mW
+Avg FU Power: 0.498007 mW
+Avg FU Dynamic Power: 0.478503 mW
+Avg FU leakage Power: 0.0195047 mW
 Avg MEM Power: 0 mW
 Avg MEM Dynamic Power: 0 mW
 Avg MEM Leakage Power: 0 mW
-Total Area: 2006.61 uM^2
-FU Area: 2006.61 uM^2
+Total Area: 1678.26 uM^2
+FU Area: 1678.26 uM^2
 MEM Area: 0 uM^2
-Num of Integer Comperators (32-bit): 2
+Num of Integer Comperators (32-bit): 1
 Num of Selects (32-bit): 1
-Num of Bit-wise Operators (32-bit): 2
+Num of Bit-wise Operators (32-bit): 1
 Num of Registers (32-bit): 5
 ===============================
         Aladdin Results        
