@@ -59,6 +59,7 @@ uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, struct bi
 		      if (vector & (1ULL << v)) {
 		        idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
 	      		node = &B64[idx];
+			vector = node->vec;
 	    	      }
 		    }
 	          }
@@ -68,7 +69,7 @@ uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, struct bi
 	    }
 	  } 
 	}
-	if (!vector & (1ULL << v)) {
+	if (vector & (1ULL << v)) {
     	  n_idx = node->base0 + __builtin_popcount(node->leafvec & ((2ULL << v) - 1));
           return N[n_idx];
         }
