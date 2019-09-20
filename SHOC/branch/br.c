@@ -6,9 +6,9 @@ int br(int a, int b, int c, int d){
     if (a > c) {
 	out = a & c;
         if (out > d) {
-	  out = c & d;
+	  out = out | d;
           if (a > out)
-	    out = a & d;
+	    out = out | b;
         }
     }
 
