@@ -76,11 +76,11 @@ void LoopUnrolling::optimize() {
     }
     
     //Nested conditional branch
-    if (prev_branch) {
+    /*if (prev_branch) {
         if (node->is_branch_op() && boost::in_degree(node_vertex, graph) != 0) {
             prev_branch = node;
         }
-    }
+    }*/
     assert(prev_branch != nullptr);
     // We should never add control edges to DMA nodes. They should be
     // constrained by memory dependences only.
