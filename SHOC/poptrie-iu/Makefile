@@ -1,6 +1,6 @@
-SRCS=poptrie.c
+SRCS=poptrie-iu.c
 
-ACCEL_NAME = poptrie
+ACCEL_NAME = poptrie-iu
 TEST_BIN = $(ACCEL_NAME)
 export TRACE_OUTPUT_DIR=$(ACCEL_NAME)
 ifndef WORKLOAD
