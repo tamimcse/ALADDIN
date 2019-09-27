@@ -1,4 +1,4 @@
-#include "poptrie.h"
+#include "poptrie-iu.h"
 
 #define POPCNT_LFT(X, N) (__builtin_popcount(((X) >> (63 - (N))) >> 1))
 
