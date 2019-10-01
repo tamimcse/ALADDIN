@@ -21,7 +21,7 @@ uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, uint8_t *
 	idx = key >> 48;
 
 	if (N16[idx])
-	  return N16[idx];
+	  nh = N16[idx];
 
 	if (C16[idx]) {
 	  node = &B22[C16[idx]];
@@ -151,7 +151,7 @@ int main(){
 	int i;
   srand(time(NULL));
 
-	for(i=0; i<N16_CNT; i++) N16[i] = 0;
+	for(i=0; i<N16_CNT; i++) N16[i] = 1;
 	for(i=0; i<C16_CNT; i++) C16[i] = 1;
 
 
