@@ -7,22 +7,21 @@
 #define N16_CNT 65536
 #define C16_CNT 65536
 #define B22_CNT 60
-#define N22_CNT 18750
+#define N22_CNT 200
 #define B28_CNT 1900
-#define N28_CNT 18750
+#define N28_CNT 1000
 #define B34_CNT 14000
-#define N34_CNT 18750
+#define N34_CNT 200000
 #define B40_CNT 8000
-#define N40_CNT 18750
+#define N40_CNT 100000
 #define B46_CNT 11000
-#define N46_CNT 18750
+#define N46_CNT 70000
 #define B52_CNT 20000
-#define N52_CNT 18750
+#define N52_CNT 650000
 #define B58_CNT 1000
-#define N58_CNT 18750
+#define N58_CNT 2000
 #define B64_CNT 1000
-#define N64_CNT 18750
-#define N_CNT 150000
+#define N64_CNT 2000
 
 #define MSK 0X8000000000000000ULL
 
