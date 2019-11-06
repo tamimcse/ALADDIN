@@ -82,7 +82,7 @@ int main(){
 		C56[i] = 1;
 		N64[i] = 1;
 	}
-	nh = fib_lookup(&N16[0], &C16[0], &N24[0], &C24[0], &N32[0], &C32[0], &N40[0], &C40[0], &N48[0], &C48[0], &N56[0], &C56[0], &N64[0], 67);
+	nh = fib_lookup(N16, C16, N24, C24, N32, C32, N40, C40, N48, C48, N56, C56, N64, 67);
 
   FILE *output;
   output = fopen("output.data", "w");
