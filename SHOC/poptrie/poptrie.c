@@ -2,10 +2,14 @@
 
 #define POPCNT_LFT(X, N) (__builtin_popcount(((X) >> (63 - (N))) >> 1))
 
+/*Calculates the number of bits set to 1*/
+#define POPCNT(X) (__builtin_popcountll(X))
+
 
 int poptrie_init (struct poptrie *pt) {
   int err = 0;
 
+  pt->def_nh = 10;
   err = leaf_init (&pt->leafs16, SIZE16);
   err = dir_init (&pt->dir16, SIZE16);
   err = leaf_init (&pt->leafs, N_SIZE);
@@ -35,127 +39,139 @@ int poptrie_init (struct poptrie *pt) {
     return 1;
 }
 
-
 /*Currently Aladdin messes things up if there are more than one return statements. So write the function in a way that it return only once.
 Currently Aladdin messes things up if return type is void.
 */
-uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, struct bitmap_pc *B28,
-		   struct bitmap_pc *B34, struct bitmap_pc *B40, struct bitmap_pc *B46,
-		   struct bitmap_pc *B52, struct bitmap_pc *B58, struct bitmap_pc *B64, uint8_t *N,   
-		   uint64_t key) {
-	uint32_t n_idx;
-	uint32_t v;
-	uint32_t idx;
-	uint32_t ck_idx;
-	uint8_t nh = DEF_NH;
-	uint64_t vector;
-	struct bitmap_pc *node;
+uint8_t fib_lookup(struct poptrie_node *B16, struct poptrie_node *B22, struct poptrie_node *B28, struct poptrie_node *B34, struct poptrie_node *B40,
+                       struct poptrie_node *B46, struct poptrie_node *B52, struct poptrie_node *B58, struct poptrie_node *B64, struct poptrie_node *B70,
+                       struct poptrie_node *B76, struct poptrie_node *B82, struct poptrie_node *B88, struct poptrie_node *B94, struct poptrie_node *B100,
+                       struct poptrie_node *B106, struct poptrie_node *B112, struct poptrie_node *B118, struct poptrie_node *B124, uint8_t *N16,
+                       uint8_t *leafN, uint16_t *dirC, uint8_t def_nh, uint64_t key1, uint64_t key2) {
+  uint32_t n_idx;
+  uint32_t off;
+  uint32_t idx, idx_sail;
+  uint32_t ck_idx;
+  struct poptrie_node *node;
+  uint8_t nh = def_nh;
 
-	idx = key >> 48;
+  idx = key1 >> 48;
+  if (N16[idx]) {
+    return N16[idx];
+  }
 
-	if (N16[idx])
-	  return N16[idx];
-
-	if (C16[idx]) {
-	  node = &B22[C16[idx]];
-	  vector = node->vec;
-          v = ((key >> 42) & 63);
-	  if (vector & (1ULL << v)) {
-	    idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
-	    node = &B28[idx];
-       	    vector = node->vec;
-            v = ((key >> 36) & 63);
-	    if (vector & (1ULL << v)) {
-	      idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
-	      node = &B34[idx];
-       	      vector = node->vec;
-              v = ((key >> 30) & 63);
-	      if (vector & (1ULL << v)) {
-	        idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
-	        node = &B40[idx];
-       	        vector = node->vec;
-                v = ((key >> 24) & 63);
-	        if (vector & (1ULL << v)) {
-	          idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
-	          node = &B46[idx];
-       	          vector = node->vec;
-                  v = ((key >> 18) & 63);
-	          if (vector & (1ULL << v)) {
-	            idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
-	            node = &B52[idx];
-      	 	    vector = node->vec;
-        	    v = ((key >> 12) & 63);
-		    if (vector & (1ULL << v)) {
-		      idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
-		      node = &B58[idx];
-       	    	      vector = node->vec;
-            	      v = ((key >> 6) & 63);
-		      if (vector & (1ULL << v)) {
-		        idx = node->base1 + __builtin_popcount(node->vec & ((2ULL << v) - 1));
-	      		node = &B64[idx];
-			vector = node->vec;
-	    	      }
-		    }
-	          }
-
-	        }
-	      }
-	    }
-	  } 
-	}
-	if (vector & (1ULL << v)) {
-    	  n_idx = node->base0 + __builtin_popcount(node->leafvec & ((2ULL << v) - 1));
-          return N[n_idx];
+  idx = dirC[idx];
+  if (!idx)
+    return nh;
+  node = &B16[idx - 1];
+  off = (key1 >> 42) & 63;
+  if (node->vec & (1ULL << off)) {
+    idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+    node = &B22[idx];
+    off = (key1 >> 36) & 63;
+    if (node->vec & (1ULL << off)) {
+      idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+      node = &B28[idx];
+      off = ((key1 >> 30) & 63);
+      if (node->vec & (1ULL << off)) {
+        idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+        node = &B34[idx];
+        off = ((key1 >> 24) & 63);
+        if (node->vec & (1ULL << off)) {
+          idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+          node = &B40[idx];
+          off = ((key1 >> 18) & 63);
+          if (node->vec & (1ULL << off)) {
+            idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+            node = &B46[idx];
+            off = ((key1 >> 12) & 63);
+            if (node->vec & (1ULL << off)) {
+              idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+              node = &B52[idx];
+              off = ((key1 >> 6) & 63);
+              if (node->vec & (1ULL << off)) {
+                idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                node = &B58[idx];
+                off = (key1 & 63);
+                if (node->vec & (1ULL << off)) {
+                  idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                  node = &B64[idx];
+                  off = ((key2 >> 58) & 63);
+                  if (node->vec & (1ULL << off)) {
+                    idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                    node = &B70[idx];
+                    off = ((key2 >> 52) & 63);
+                    if (node->vec & (1ULL << off)) {
+                      idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                      node = &B76[idx];
+                      off = ((key2 >> 46) & 63);
+                      if (node->vec & (1ULL << off)) {
+                        idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                        node = &B82[idx];
+                        off = ((key2 >> 40) & 63);
+                        if (node->vec & (1ULL << off)) {
+                          idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                          node = &B88[idx];
+                          off = ((key2 >> 34) & 63);
+                          if (node->vec & (1ULL << off)) {
+                            idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                            node = &B94[idx];
+                            off = ((key2 >> 28) & 63);
+                            if (node->vec & (1ULL << off)) {
+                              idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                              node = &B100[idx];
+                              off = ((key2 >> 22) & 63);
+                              if (node->vec & (1ULL << off)) {
+                                idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                                node = &B106[idx];
+                                off = ((key2 >> 16) & 63);
+                                if (node->vec & (1ULL << off)) {
+                                  idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                                  node = &B112[idx];
+                                  off = ((key2 >> 10) & 63);
+                                  if (node->vec & (1ULL << off)) {
+                                    idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                                    node = &B118[idx];
+                                    off = ((key2 >> 4) & 63);
+                                    if (node->vec & (1ULL << off)) {
+                                      idx = node->base0 + POPCNT(node->vec & ((2ULL << off) - 1)) - 1;
+                                      node = &B124[idx];
+                                      off = (key2 & 15) << 2;
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-	return nh;
-}
+      }
+    }
+  }
+  if (node->leafvec & (1ULL << off)) {
+    n_idx = node->base1 + POPCNT(node->leafvec & ((2ULL << off) - 1)) - 1;
+    nh = leafN[n_idx];
+  }
 
-void reset_node (struct bitmap_pc *ppc) {
-	ppc->vec = 0XFFFFFFFFFFFFFFFF;
-	ppc->leafvec = 0XFFFFFFFFFFFFFFFF;
-	ppc->base0 = 5;
-	ppc->base1 = 5;
+  return nh;
 }
 
 int main(){
-	uint8_t nh;
-	uint8_t *N16, *N;
-	uint16_t *C16;
-	struct bitmap_pc *B22, *B28, *B34, *B40, *B46, *B52, *B58, *B64;
-        
 
-    N16 = (uint8_t *) malloc (sizeof(uint8_t) * N16_CNT);
-    C16 = (uint16_t *) malloc (sizeof(uint16_t) * C16_CNT);
+  struct poptrie poptrie;
+  uint8_t nh;
 
-    B22 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B22_CNT);
-    B28 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B28_CNT);
-    B34 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B34_CNT);
-    B40 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B40_CNT);
-    B46 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B46_CNT);
-    B52 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B52_CNT);
-    B58 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B58_CNT);
-    B64 = (struct bitmap_pc *) malloc (sizeof(struct bitmap_pc) * B64_CNT);
-    N = (uint8_t *) malloc (sizeof(uint8_t) * N_CNT);
-
-	int i;
-  srand(time(NULL));
-
-	for(i=0; i<N16_CNT; i++) N16[i] = 0;
-	for(i=0; i<C16_CNT; i++) C16[i] = 1;
-
-
-	for(i=0; i<B22_CNT; i++) reset_node(&B22[i]);
-	for(i=0; i<B28_CNT; i++) reset_node(&B28[i]);
-	for(i=0; i<B34_CNT; i++) reset_node(&B34[i]);
-	for(i=0; i<B40_CNT; i++) reset_node(&B40[i]);
-	for(i=0; i<B46_CNT; i++) reset_node(&B46[i]);
-	for(i=0; i<B52_CNT; i++) reset_node(&B52[i]);
-	for(i=0; i<B58_CNT; i++) reset_node(&B58[i]);
-	for(i=0; i<B64_CNT; i++) reset_node(&B64[i]);
-
-	for(i=0; i<N_CNT; i++) N[i] = 1;
-
-	nh = fib_lookup(N16, C16, B22, B28, B34, B40, B46, B52, B58, B64, N, 67);
+  poptrie_init(&poptrie);
+  nh = fib_lookup(poptrie.L16.B, poptrie.L22.B, poptrie.L28.B, poptrie.L34.B, poptrie.L40.B, poptrie.L46.B, poptrie.L52.B,
+                       poptrie.L58.B, poptrie.L64.B, poptrie.L70.B, poptrie.L76.B, poptrie.L82.B, poptrie.L88.B, poptrie.L94.B,
+                       poptrie.L100.B, poptrie.L106.B, poptrie.L112.B, poptrie.L118.B, poptrie.L124.B, poptrie.leafs16.N,
+                       poptrie.leafs.N, poptrie.dir16.c, poptrie.def_nh, 67, 65);
 
   FILE *output;
   output = fopen("output.data", "w");

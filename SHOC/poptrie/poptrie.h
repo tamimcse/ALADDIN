@@ -4,27 +4,7 @@
 #include <time.h>
 #include <stdint.h>
 
-#define N16_CNT 65536
-#define C16_CNT 65536
-#define B22_CNT 60
-#define N22_CNT 18750
-#define B28_CNT 1900
-#define N28_CNT 18750
-#define B34_CNT 14000
-#define N34_CNT 18750
-#define B40_CNT 8000
-#define N40_CNT 18750
-#define B46_CNT 11000
-#define N46_CNT 18750
-#define B52_CNT 20000
-#define N52_CNT 18750
-#define B58_CNT 1000
-#define N58_CNT 18750
-#define B64_CNT 1000
-#define N64_CNT 18750
-#define N_CNT 150000
 
-/////////////////////////
 #define SIZE16 65536
 #define SIZE22 3000
 #define SIZE28 15000
@@ -46,11 +26,8 @@
 #define SIZE124 1000
 #define N_SIZE 1500000
 
-/////////////////////////
 
 #define MSK 0X8000000000000000ULL
-
-#define DEF_NH 1
 
 struct poptrie_node {
     uint64_t vec;
@@ -80,7 +57,7 @@ int poptrie_level_init (struct poptrie_level *l, uint8_t level_num, uint32_t siz
     parent->chield = l;
   for (i = 0; i < size; i++) {
     l->B[i].vec = 255;
-    l->B[i].vec = 255;
+    l->B[i].leafvec = 255;
   }
   return 0;
 }
@@ -97,6 +74,10 @@ int dir_init (struct dir *d, uint32_t size) {
   d->c = (uint16_t *) calloc (size, sizeof(uint16_t));
   d->size = size;
   d->count = 0;
+
+  for (i = 0; i < size; i++) {
+    d->c[i] = 1;
+  }
 
   if (!d->c)
     return -1;
@@ -120,8 +101,10 @@ int leaf_init (struct leaf *l, uint32_t size) {
   l->size = size;
   l->count = 0;
 
-  for (i = 0; i < size; i++) {
-    l->N[i] = 128;
+  if (size != SIZE16) {
+    for (i = 0; i < size; i++) {
+      l->N[i] = 128;
+    }
   }
 
   if (!l->N || !l->P)
@@ -148,9 +131,8 @@ struct bitmap_pc {
     uint16_t base1;
 };
 
-
-
-uint8_t fib_lookup(uint8_t *N16, uint16_t *C16, struct bitmap_pc *B22, struct bitmap_pc *B28,
-		   struct bitmap_pc *B34, struct bitmap_pc *B40, struct bitmap_pc *B46,
-		   struct bitmap_pc *B52, struct bitmap_pc *B58, struct bitmap_pc *B64, uint8_t *N,   
-		   uint64_t key);
+uint8_t fib_lookup(struct poptrie_node *B16, struct poptrie_node *B22, struct poptrie_node *B28, struct poptrie_node *B34, struct poptrie_node *B40,
+                       struct poptrie_node *B46, struct poptrie_node *B52, struct poptrie_node *B58, struct poptrie_node *B64, struct poptrie_node *B70,
+                       struct poptrie_node *B76, struct poptrie_node *B82, struct poptrie_node *B88, struct poptrie_node *B94, struct poptrie_node *B100,
+                       struct poptrie_node *B106, struct poptrie_node *B112, struct poptrie_node *B118, struct poptrie_node *B124, uint8_t *N16,
+                       uint8_t *leafN, uint16_t *dirC, uint8_t def_nh, uint64_t key1, uint64_t key2);
