@@ -2,6 +2,40 @@
 
 #define POPCNT_LFT(X, N) (__builtin_popcount(((X) >> (63 - (N))) >> 1))
 
+
+int poptrie_init (struct poptrie *pt) {
+  int err = 0;
+
+  err = leaf_init (&pt->leafs16, SIZE16);
+  err = dir_init (&pt->dir16, SIZE16);
+  err = leaf_init (&pt->leafs, N_SIZE);
+  err = poptrie_level_init (&pt->L16, 16, SIZE16/64, NULL);
+  err = poptrie_level_init (&pt->L22, 22, SIZE22, &pt->L16);
+  err = poptrie_level_init (&pt->L28, 28, SIZE28, &pt->L22);
+  err = poptrie_level_init (&pt->L34, 34, SIZE34, &pt->L28);
+  err = poptrie_level_init (&pt->L40, 40, SIZE40, &pt->L34);
+  err = poptrie_level_init (&pt->L46, 46, SIZE46, &pt->L40);
+  err = poptrie_level_init (&pt->L52, 52, SIZE52, &pt->L46);
+  err = poptrie_level_init (&pt->L58, 58, SIZE58, &pt->L52);
+  err = poptrie_level_init (&pt->L64, 64, SIZE64, &pt->L58);
+  err = poptrie_level_init (&pt->L70, 70, SIZE70, &pt->L64);
+  err = poptrie_level_init (&pt->L76, 76, SIZE76, &pt->L70);
+  err = poptrie_level_init (&pt->L82, 82, SIZE82, &pt->L76);
+  err = poptrie_level_init (&pt->L88, 88, SIZE88, &pt->L82);
+  err = poptrie_level_init (&pt->L94, 94, SIZE94, &pt->L88);
+  err = poptrie_level_init (&pt->L100, 100, SIZE100, &pt->L94);
+  err = poptrie_level_init (&pt->L106, 106, SIZE106, &pt->L100);
+  err = poptrie_level_init (&pt->L112, 112, SIZE112, &pt->L106);
+  err = poptrie_level_init (&pt->L118, 118, SIZE118, &pt->L112);
+  err = poptrie_level_init (&pt->L124, 124, SIZE124, &pt->L118);
+
+  if (err)
+    return -1;   
+  else
+    return 1;
+}
+
+
 /*Currently Aladdin messes things up if there are more than one return statements. So write the function in a way that it return only once.
 Currently Aladdin messes things up if return type is void.
 */
