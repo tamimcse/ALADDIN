@@ -4,7 +4,6 @@
 #include <time.h>
 #include <stdint.h>
 
-
 #define SIZE16 65536
 #define SIZE22 3000
 #define SIZE28 15000
@@ -122,13 +121,6 @@ struct poptrie {
   struct leaf leafs;
   //Non-leaf nodes
   struct poptrie_level L16, L22, L28, L34, L40, L46, L52, L58, L64, L70, L76, L82, L88, L94, L100, L106, L112, L118, L124;
-};
-
-struct bitmap_pc {
-    uint64_t vec;
-    uint64_t leafvec;
-    uint16_t base0;
-    uint16_t base1;
 };
 
 uint8_t fib_lookup(struct poptrie_node *B16, struct poptrie_node *B22, struct poptrie_node *B28, struct poptrie_node *B34, struct poptrie_node *B40,
