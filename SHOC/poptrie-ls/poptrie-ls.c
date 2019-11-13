@@ -5,18 +5,13 @@
 /*Calculates the number of bits set to 1*/
 #define POPCNT(X) (__builtin_popcountll(X))
 
+//Size of each level
 #define SIZE16 1024
-#define N16_CNT 100
 #define SIZE24 240
-#define N24_CNT 400
 #define SIZE32 24000
-#define N32_CNT 50000
 #define SIZE40 28000
-#define N40_CNT 300000
 #define SIZE48 44000
-#define N48_CNT 300000
 #define SIZE56 4000
-#define N56_CNT 7000
 #define SIZE64 4000
 #define SIZE72 100
 #define SIZE80 100
@@ -26,9 +21,9 @@
 #define SIZE112 100
 #define SIZE120 100
 #define SIZE128 100
-#define N64_CNT 7000
 
-#define N_CNT (N16_CNT + N24_CNT + N32_CNT + N40_CNT + N48_CNT + N56_CNT + N64_CNT)
+#define N_CNT 664500
+
 
 int poptrie_ls_init (struct poptrie_ls *poptrie_ls) {
   int err = 0;
