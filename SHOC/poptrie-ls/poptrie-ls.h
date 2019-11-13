@@ -31,8 +31,6 @@
 struct bitmap_poptrie_ls {
     uint64_t bitmap;
     uint32_t popcnt;
-  //Index from which leafs of this level starts in leaf
-  uint32_t leaf_start;
 };
 
 struct poptrie_ls_level {
