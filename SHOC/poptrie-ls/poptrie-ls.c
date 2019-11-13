@@ -28,7 +28,7 @@
 int poptrie_ls_init (struct poptrie_ls *poptrie_ls) {
   int err = 0;
 
-  poptrie_ls->def_nh = 1;
+  poptrie_ls->def_nh = 2;
   leaf_init (&poptrie_ls->leafs, N_CNT);
   err = poptrie_ls_level_init (&poptrie_ls->level16, 16, SIZE16/4, NULL);
   err = poptrie_ls_level_init (&poptrie_ls->level24, 24, SIZE24, &poptrie_ls->level16);

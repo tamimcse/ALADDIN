@@ -54,8 +54,8 @@ int poptrie_ls_level_init (struct poptrie_ls_level *l, uint8_t level_num, uint32
   if (parent != NULL)
     parent->chield = l;
   for (i = 0; i < size; i++) {
-    l->B[i].bitmap = 255;
-    l->C[i].bitmap = 255;
+    l->B[i].bitmap = 0XFFFFFFFFFFFFFFFF;
+    l->C[i].bitmap = 0XFFFFFFFFFFFFFFFF;
   }
   return 0;
 }
