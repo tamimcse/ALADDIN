@@ -28,26 +28,27 @@
 
 #define MSK 0X8000000000000000ULL
 
-struct poptrie_node {
-    uint64_t vec;
-    uint64_t leafvec;
-    uint32_t base0;
-    uint32_t base1;
+struct bitmap_poptrie_ls {
+    uint64_t bitmap;
+    uint32_t popcnt;
+  //Index from which leafs of this level starts in leaf
+  uint32_t leaf_start;
 };
 
-struct poptrie_level {
-  struct poptrie_node *B;
+struct poptrie_ls_level {
+  struct bitmap_poptrie_ls *B, *C;
   uint8_t level_num;
   uint32_t count;
   uint32_t size;
-  struct poptrie_level *parent, *chield;
+  struct poptrie_ls_level *parent, *chield;
 };
 
-int poptrie_level_init (struct poptrie_level *l, uint8_t level_num, uint32_t size, struct poptrie_level *parent) {
+int poptrie_ls_level_init (struct poptrie_ls_level *l, uint8_t level_num, uint32_t size, struct poptrie_ls_level *parent) {
   long long i;
 
-  l->B = (struct poptrie_node *) calloc (size, sizeof (struct poptrie_node));
-  if (!l->B)
+  l->B = (struct bitmap_poptrie_ls *) calloc (size, sizeof (struct bitmap_poptrie_ls));
+  l->C = (struct bitmap_poptrie_ls *) calloc (size, sizeof (struct bitmap_poptrie_ls));
+  if (!l->B || !l->C)
     return -1;
   l->level_num = level_num;
   l->size = size;
@@ -55,33 +56,10 @@ int poptrie_level_init (struct poptrie_level *l, uint8_t level_num, uint32_t siz
   if (parent != NULL)
     parent->chield = l;
   for (i = 0; i < size; i++) {
-    l->B[i].vec = 255;
-    l->B[i].leafvec = 255;
+    l->B[i].bitmap = 255;
+    l->C[i].bitmap = 255;
   }
   return 0;
-}
-
-struct dir {
-  uint16_t *c;
-  uint64_t size;
-  uint64_t count;
-};
-
-int dir_init (struct dir *d, uint32_t size) {
-  long long i;
-
-  d->c = (uint16_t *) calloc (size, sizeof(uint16_t));
-  d->size = size;
-  d->count = 0;
-
-  for (i = 0; i < size; i++) {
-    d->c[i] = 1;
-  }
-
-  if (!d->c)
-    return -1;
-  else
-    return 0;
 }
 
 
@@ -100,10 +78,8 @@ int leaf_init (struct leaf *l, uint32_t size) {
   l->size = size;
   l->count = 0;
 
-  if (size != SIZE16) {
-    for (i = 0; i < size; i++) {
-      l->N[i] = 128;
-    }
+  for (i = 0; i < size; i++) {
+    l->N[i] = 128;
   }
 
   if (!l->N || !l->P)
@@ -112,19 +88,17 @@ int leaf_init (struct leaf *l, uint32_t size) {
     return 0;
 }
 
-struct poptrie {
+struct poptrie_ls {
   uint8_t def_nh;
-  struct leaf leafs16;
-  //direct pointer
-  struct dir dir16;
-  //Rest of the leafs
+  struct poptrie_ls_level level16, level24, level32, level40, level48, level56, level64, level72, level80, level88, level96, level104, level112, level120, level128;
   struct leaf leafs;
-  //Non-leaf nodes
-  struct poptrie_level L16, L22, L28, L34, L40, L46, L52, L58, L64, L70, L76, L82, L88, L94, L100, L106, L112, L118, L124;
 };
 
-uint8_t fib_lookup(struct poptrie_node *B16, struct poptrie_node *B22, struct poptrie_node *B28, struct poptrie_node *B34, struct poptrie_node *B40,
-                       struct poptrie_node *B46, struct poptrie_node *B52, struct poptrie_node *B58, struct poptrie_node *B64, struct poptrie_node *B70,
-                       struct poptrie_node *B76, struct poptrie_node *B82, struct poptrie_node *B88, struct poptrie_node *B94, struct poptrie_node *B100,
-                       struct poptrie_node *B106, struct poptrie_node *B112, struct poptrie_node *B118, struct poptrie_node *B124, uint8_t *N16,
-                       uint8_t *leafN, uint16_t *dirC, uint8_t def_nh, uint64_t key1, uint64_t key2);
+uint8_t fib_lookup(struct bitmap_poptrie_ls *C16, struct bitmap_poptrie_ls *B16, struct bitmap_poptrie_ls *C24, struct bitmap_poptrie_ls *B24,
+                   struct bitmap_poptrie_ls *C32, struct bitmap_poptrie_ls *B32, struct bitmap_poptrie_ls *C40, struct bitmap_poptrie_ls *B40,
+                   struct bitmap_poptrie_ls *C48, struct bitmap_poptrie_ls *B48, struct bitmap_poptrie_ls *C56, struct bitmap_poptrie_ls *B56,
+                   struct bitmap_poptrie_ls *C64, struct bitmap_poptrie_ls *B64, struct bitmap_poptrie_ls *C72, struct bitmap_poptrie_ls *B72,
+                   struct bitmap_poptrie_ls *C80, struct bitmap_poptrie_ls *B80, struct bitmap_poptrie_ls *C88, struct bitmap_poptrie_ls *B88,
+                   struct bitmap_poptrie_ls *C96, struct bitmap_poptrie_ls *B96, struct bitmap_poptrie_ls *C104, struct bitmap_poptrie_ls *B104,
+                   struct bitmap_poptrie_ls *C112, struct bitmap_poptrie_ls *B112, struct bitmap_poptrie_ls *C120, struct bitmap_poptrie_ls *B120,
+                   struct bitmap_poptrie_ls *B128, uint8_t *leafN, uint8_t def_nh, uint64_t key1, uint64_t key2);
